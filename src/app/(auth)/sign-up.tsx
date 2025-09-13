@@ -74,7 +74,7 @@ export default function SignIn() {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         Alert.alert("Sucesso", "Login realizado com sucesso!");
-        router.push("/(main)");
+        router.push("/(main)/(home)/index");
       } else {
         Alert.alert("Erro", "Falha ao verificar o código.");
       }

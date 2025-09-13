@@ -86,10 +86,10 @@ export default function SignIn() {
           ToastAndroid.BOTTOM,
           50
         );
-        router.push("/(main)");
+        router.push("/(main)/(home)/index");
       } else {
         // Se não houver sessionId mas o fluxo foi completo, redirecione
-        router.push("/(main)");
+        router.push("/(main)/(home)/index");
       }
     } catch (err) {
       if (err instanceof Error) {

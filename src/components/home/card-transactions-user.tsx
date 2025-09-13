@@ -1,10 +1,12 @@
+import { useTransactionsQuery } from "@/services/query/transactions.query";
+import { TransactionProps } from "@/types/interfaces";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { endOfMonth, isWithinInterval, parseISO, startOfMonth } from "date-fns";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
-import GetTransactionsQuery from "../../services/query/transactions.query";
-import { TransactionProps } from "../../types/interfaces";
 import Alert from "../Alert-Infor";
-import CardTransaction from "../card-transactions";
+import CardTransaction from "../cards/card-transactions";
+import DateSelector from "../DateSelectorProps";
 import ListWrapper from "../ListWrapper";
 
 type PropsUser = {
@@ -15,17 +17,19 @@ const TransactionsPage = ({ userId }: PropsUser) => {
   const deviceColorScheme = useColorScheme();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [transactionsToShow, setTransactionsToShow] = useState<number>(12);
-  const [transactionToEdit, setTransactionToEdit] =
-    useState<TransactionProps | null>(null);
 
-  const { mockTransaction, errorTransaction, loader, refetchTransaction } =
-    GetTransactionsQuery(userId);
+  const {
+    transactions,
+    isLoadingTransactions,
+    transactionsError,
+    refetchTransactions,
+  } = useTransactionsQuery(userId);
 
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await refetchTransaction();
+    await refetchTransactions();
     setRefreshing(false);
   };
 
@@ -35,10 +39,6 @@ const TransactionsPage = ({ userId }: PropsUser) => {
 
   const handleDelete = (id: string) => {
     // Implementar exclusão
-  };
-
-  const normalizeDate = (date: Date | string): Date => {
-    return typeof date === "string" ? parseISO(date) : date;
   };
 
   function filterTransactionsByMonth(
@@ -66,24 +66,14 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     });
   }
 
-  const filteredTransactions = mockTransaction
-    ? filterTransactionsByMonth(mockTransaction, selectedDate)
+  const filteredTransactions = transactions
+    ? filterTransactionsByMonth(transactions, selectedDate)
     : [];
 
   const paginatedTransactions = filteredTransactions.slice(
     0,
     transactionsToShow
   );
-
-  const hasMore = filteredTransactions.length > transactionsToShow;
-
-  const isCurrentMonth = () => {
-    const now = new Date();
-    return (
-      selectedDate.getMonth() === now.getMonth() &&
-      selectedDate.getFullYear() === now.getFullYear()
-    );
-  };
 
   useEffect(() => {
     const checkMonthChange = () => {
@@ -100,7 +90,7 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     return () => clearInterval(interval);
   }, [selectedDate]);
 
-  if (loader) {
+  if (isLoadingTransactions) {
     return (
       <View className="w-full h-full flex-1 mt-8 items-center justify-center dark:bg-zinc-900">
         <ActivityIndicator
@@ -111,7 +101,7 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     );
   }
 
-  if (!mockTransaction) {
+  if (!transactions) {
     return (
       <Alert
         type="warning"
@@ -123,7 +113,7 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     );
   }
 
-  if (errorTransaction) {
+  if (transactionsError) {
     return (
       <Alert
         type="warning"
@@ -136,18 +126,29 @@ const TransactionsPage = ({ userId }: PropsUser) => {
   }
 
   return (
-    <View className="">
-      <View className="mb-4">
-        <Text className="dark:text-white font-semibold text-2xl">
-          Gerenciar Finanças
-        </Text>
-        <Text className="text-base text-zinc-400 dark:text-zinc-400">
-          {paginatedTransactions.length} de {filteredTransactions.length}{" "}
-          transações
-        </Text>
+    <View className="w-full h-full">
+      <View className="mb-4 flex-row justify-between">
+        <View>
+          <Text className="dark:text-white font-semibold text-2xl">
+            Gerenciar Finanças
+          </Text>
+          <Text className="text-base text-zinc-400 dark:text-zinc-400">
+            {paginatedTransactions.length} de {filteredTransactions.length}{" "}
+            transações
+          </Text>
+        </View>
+        <MaterialCommunityIcons
+          name="finance"
+          color={deviceColorScheme === "dark" ? "#fff" : "#27272a"}
+          size={25}
+        />
       </View>
+      <DateSelector
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+      />
       <ListWrapper
-        data={mockTransaction}
+        data={filteredTransactions}
         loading={refreshing}
         onRefresh={handleRefresh}
         emptyTitle="Nenhuma transação encontrada"
@@ -159,7 +160,7 @@ const TransactionsPage = ({ userId }: PropsUser) => {
           <CardTransaction
             transaction={item}
             userId={userId}
-            refetch={refetchTransaction}
+            refetch={refetchTransactions}
             handleDelete={handleDelete}
             handleEdite={handleEdit}
           />

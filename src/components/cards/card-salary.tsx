@@ -6,8 +6,8 @@ import {
 } from "@expo/vector-icons";
 import React from "react";
 import { Text, useColorScheme, View } from "react-native";
-import { formatCurrency, formatDate } from "../lib/formatDts";
-import { Salary } from "../types/interfaces";
+import { formatCurrency, formatDate } from "../../lib/formatDts";
+import { Salary } from "../../types/interfaces";
 
 interface SalaryCardProps {
   salary: Salary;

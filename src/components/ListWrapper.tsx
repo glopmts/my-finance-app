@@ -47,6 +47,7 @@ const ListWrapper = <T,>({
 
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={data}
       keyExtractor={keyExtractor}
       renderItem={({ item, index }) => renderItem(item, index)}
@@ -64,7 +65,8 @@ const ListWrapper = <T,>({
       ListFooterComponent={ListFooterComponent}
       contentContainerStyle={{
         padding: 1,
-        paddingBottom: 32,
+        flexGrow: 1,
+        paddingBottom: 20,
       }}
       ItemSeparatorComponent={() => <View className="h-3" />}
       showsVerticalScrollIndicator={false}

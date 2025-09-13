@@ -8,6 +8,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaperProvider } from "react-native-paper";
+
 import "./global.css";
 
 SplashScreen.setOptions({
@@ -47,11 +49,13 @@ function RootLayoutNav() {
         }}
       >
         <PortalProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          ></Stack>
+          <PaperProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            ></Stack>
+          </PaperProvider>
         </PortalProvider>
       </GestureHandlerRootView>
     </>

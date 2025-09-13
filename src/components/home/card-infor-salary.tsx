@@ -1,9 +1,9 @@
+import GetSalaryQuery from "@/services/query/salary.query";
+import GetTransactionsQuery from "@/services/query/transactions.query";
 import { TransactionProps } from "@/types/interfaces";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import GetSalaryQuery from "../../services/query/salary.query";
-import GetTransactionsQuery from "../../services/query/transactions.query";
 import Alert from "../Alert-Infor";
-import SalaryCard from "../card-salary";
+import SalaryCard from "../cards/card-salary";
 
 type PropsUser = {
   userId: string;

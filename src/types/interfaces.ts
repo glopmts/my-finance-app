@@ -33,6 +33,16 @@ export interface TransactionProps {
   categoryId: string | null;
 }
 
+export interface TransactionPropsCreater {
+  userId: string;
+  description?: string | null;
+  type: TransactionType;
+  amount: number;
+  date: string;
+  isRecurring: boolean;
+  recurringId?: string | null;
+}
+
 export interface Transaction {
   userId: string;
   description: string | null;
