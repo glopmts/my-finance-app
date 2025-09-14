@@ -16,7 +16,6 @@ type PropsUser = {
 const TransactionsPage = ({ userId }: PropsUser) => {
   const deviceColorScheme = useColorScheme();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [transactionsToShow, setTransactionsToShow] = useState<number>(12);
 
   const {
     transactions,
@@ -70,10 +69,7 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     ? filterTransactionsByMonth(transactions, selectedDate)
     : [];
 
-  const paginatedTransactions = filteredTransactions.slice(
-    0,
-    transactionsToShow
-  );
+  const paginatedTransactions = filteredTransactions.slice(0);
 
   useEffect(() => {
     const checkMonthChange = () => {

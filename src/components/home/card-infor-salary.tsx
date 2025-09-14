@@ -1,9 +1,10 @@
 import GetSalaryQuery from "@/services/query/salary.query";
 import GetTransactionsQuery from "@/services/query/transactions.query";
 import { TransactionProps } from "@/types/interfaces";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import Alert from "../Alert-Infor";
 import SalaryCard from "../cards/card-salary";
+import ProgressBar from "../ProgressBar";
 
 type PropsUser = {
   userId: string;
@@ -11,13 +12,10 @@ type PropsUser = {
 
 const InforCarSalary = ({ userId }: PropsUser) => {
   const { salary, error, isLoading, refetch } = GetSalaryQuery(userId);
-
-  const { mockTransaction, errorTransaction, loader, refetchTransaction } =
-    GetTransactionsQuery(userId);
+  const { mockTransaction, loader } = GetTransactionsQuery(userId);
 
   function calculateTotalExpenses(transactions: TransactionProps[]) {
     if (!Array.isArray(transactions)) return 0;
-
     return transactions.reduce(
       (sum, transaction) => sum + transaction.amount,
       0
@@ -32,7 +30,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
     );
   }
 
-  if (!salary) {
+  if (!salary || salary.length === 0) {
     return (
       <Alert
         type="warning"
@@ -44,7 +42,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
     );
   }
 
-  if (!mockTransaction) {
+  if (!mockTransaction || mockTransaction.length === 0) {
     return (
       <Alert
         type="warning"
@@ -56,35 +54,41 @@ const InforCarSalary = ({ userId }: PropsUser) => {
     );
   }
 
-  const maxValueFilter = salary.map((c) => c.amount);
-  const maxValue = maxValueFilter[0];
-
+  const maxValue = salary[0]?.amount || 0;
   const totalExpenses = calculateTotalExpenses(mockTransaction);
   const progressValue = Math.min((totalExpenses / maxValue) * 100, 100);
   const isOverLimit = totalExpenses > maxValue;
 
   return (
-    <TouchableOpacity activeOpacity={0.7}>
+    <View>
+      <View className="mb-4">
+        <Text className="dark:text-white font-semibold text-2xl">
+          Gestão de Salários
+        </Text>
+      </View>
+
       <View>
-        <View className="mb-4">
-          <Text className="dark:text-white font-semibold text-2xl">
-            Gestão de Salários
-          </Text>
-        </View>
-        <View>
-          <View className="lg:col-span-2 space-y-4">
-            {salary?.map((card) => (
-              <SalaryCard
-                key={card.id}
-                salary={card}
-                progressValue={progressValue}
-                isOverLimit={isOverLimit}
-              />
-            ))}
-          </View>
+        <View className="lg:col-span-2 space-y-4">
+          {salary.map((card) => (
+            <SalaryCard
+              key={card.id}
+              salary={card}
+              progressValue={progressValue}
+              isOverLimit={isOverLimit}
+            />
+          ))}
         </View>
       </View>
-    </TouchableOpacity>
+
+      <View className="mt-9">
+        <View className="pb-3">
+          <Text className="dark:text-white font-semibold text-2xl">
+            Gerenciar Finanças
+          </Text>
+        </View>
+        <ProgressBar userId={userId} maxValue={maxValue} />
+      </View>
+    </View>
   );
 };
 

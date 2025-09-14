@@ -8,6 +8,8 @@ export interface Transaction extends TransactionPropsCreater {
 }
 
 export interface TransactionUpdateProps {
+  id: string;
+  userId: string;
   description?: string | null;
   type?: TransactionType;
   amount?: number;

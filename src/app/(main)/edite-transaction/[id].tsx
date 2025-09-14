@@ -16,16 +16,16 @@ const EditerTransaction = () => {
   const { user, loading } = useClerkUser();
   const router = useRouter();
 
-  const handleSubmit = async (transaction: TransactionUpdateProps) => {
-    await TransactionService.update(transaction);
-  };
-
   const {
     transaction,
     isLoadingTransaction,
     transactionError,
     refetchTransaction,
   } = useTransactionQuery(transactionId);
+
+  const handleSubmit = async (transaction: TransactionUpdateProps) => {
+    await TransactionService.update(transaction);
+  };
 
   if (loading || isLoadingTransaction) {
     return <InlineLoading message="Carregando..." size="small" />;
@@ -54,6 +54,7 @@ const EditerTransaction = () => {
         onUpdate={handleSubmit}
         onCancel={handleCancel}
         refetch={refetchTransaction}
+        transactionId={transactionId}
       />
     </View>
   );

@@ -15,6 +15,7 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import { TransactionUpdateProps } from "../services/transactions.service";
 import {
   Transaction,
   TransactionPropsCreater,
@@ -24,17 +25,19 @@ import { createTransactionStyles } from "./styles/form-transactions";
 
 interface TransactionFormProps {
   userId: string;
+  transactionId?: string;
   categories?: { id: string; name: string }[];
   transaction?: Transaction;
   mode?: "create" | "edit";
   onSubmit?: (transaction: TransactionPropsCreater) => Promise<void>;
-  onUpdate?: (transaction: TransactionPropsCreater) => Promise<void>;
+  onUpdate?: (transaction: TransactionUpdateProps) => Promise<void>;
   onCancel?: () => void;
   refetch?: () => void;
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
   userId,
+  transactionId,
   categories = [],
   transaction,
   mode = "create",
@@ -105,18 +108,33 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
     setIsLoading(true);
     try {
+      const normalizedDescription = description
+        ? description.toUpperCase()
+        : undefined;
+
       const transactionData: TransactionPropsCreater = {
         userId,
         type,
         amount: parseFloat(amount),
-        description: description || null,
+        description: normalizedDescription || null,
         date: date.toISOString(),
         isRecurring,
         recurringId: isRecurring ? `recurring_${Date.now()}` : null,
       };
 
+      const transactionDataUpdate: TransactionUpdateProps = {
+        id: transactionId!,
+        userId,
+        amount: parseFloat(amount),
+        date: date.toISOString(),
+        isRecurring,
+        type,
+        description: normalizedDescription || null,
+        recurringId: isRecurring ? `recurring_${Date.now()}` : null,
+      };
+
       if (mode === "edit" && transaction && onUpdate) {
-        await onUpdate(transactionData);
+        await onUpdate(transactionDataUpdate);
         Alert.alert("Sucesso", "Transação atualizada com sucesso!");
         refetch?.();
       } else {
@@ -128,7 +146,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     } catch (error) {
       const errorMessage =
         mode === "edit"
-          ? "Não foi possível atualizar a transação. Tente novamente."
+          ? "Não foi possível atualizar a transação. Tente novamente." + error
           : "Não foi possível criar a transação. Tente novamente.";
 
       Alert.alert("Erro", errorMessage);
@@ -234,10 +252,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"

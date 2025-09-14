@@ -2,7 +2,6 @@ import { useUser } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
 
 import { AntDesign } from "@expo/vector-icons";
 
@@ -10,10 +9,7 @@ const Header = () => {
   const { user } = useUser();
 
   return (
-    <Animated.View
-      entering={FadeIn.delay(50).duration(500)}
-      className="flex-row justify-between items-center py-4"
-    >
+    <View className="flex-row justify-between items-center py-4 sticky top-0">
       <View className="flex-row items-center gap-3">
         <Image
           source={{
@@ -35,7 +31,7 @@ const Header = () => {
         </View>
       </View>
 
-      <Link href="/" asChild>
+      <Link href="/profile" asChild>
         <Pressable className="mt-8 items-center gap-1">
           <Image
             source={{ uri: user?.imageUrl }}
@@ -51,7 +47,7 @@ const Header = () => {
           <AntDesign name="down" size={16} color="white" />
         </Pressable>
       </Link>
-    </Animated.View>
+    </View>
   );
 };
 

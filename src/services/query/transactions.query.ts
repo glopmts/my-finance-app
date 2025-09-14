@@ -37,9 +37,7 @@ export function useTransactionsQuery(
         });
       }
 
-      const url = `/transaction/${userId}${
-        queryParams.toString() ? `?${queryParams}` : ""
-      }`;
+      const url = `/transaction/${userId}`;
       const response = await api.get(url);
 
       if (!response) throw new Error("Falha ao buscar as transações");
@@ -97,8 +95,8 @@ export function useTransactionQuery(transactionId: string) {
   };
 }
 
-// Hook para buscar transações recorrentes
-export function useRecurringTransactionsQuery(userId: string) {
+// Hook para buscar 5 últimas transações
+export function use5TransactionsQuery(userId: string) {
   const {
     data: recurringTransactions,
     isLoading: isLoadingRecurring,
@@ -109,11 +107,11 @@ export function useRecurringTransactionsQuery(userId: string) {
     queryFn: async () => {
       if (!userId) throw new Error("ID do usuário é obrigatório");
 
-      const response = await api.get(`/transaction/${userId}?isRecurring=true`);
+      const response = await api.get(`/transaction/latest/user/${userId}`);
 
-      if (!response) throw new Error("Falha ao buscar transações recorrentes");
+      if (!response) throw new Error("Falha ao buscar 5 últimas transações");
 
-      return response.data;
+      return response.data.data;
     },
     refetchInterval: 120000, // 2 minutos
     refetchOnWindowFocus: true,
@@ -189,7 +187,7 @@ export default function GetTransactionsQuery(
 
   const singleTransaction = useTransactionQuery(options?.includeSingle || "");
 
-  const recurringTransactions = useRecurringTransactionsQuery(
+  const recurringTransactions = use5TransactionsQuery(
     options?.includeRecurring ? userId : ""
   );
 

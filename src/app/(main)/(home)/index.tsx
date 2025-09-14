@@ -1,8 +1,9 @@
 import Header from "@/components/Header";
 import InforCarSalary from "@/components/home/card-infor-salary";
+import LastestTransactionsPage from "@/components/home/lastest-user-transactions";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
-import { Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 const HomePage = () => {
   const { user, loading, error, isAuthenticated } = useClerkUser();
@@ -30,19 +31,28 @@ const HomePage = () => {
   }
 
   return (
-    <View
-      className="flex-1 dark:bg-zinc-900"
-      style={{
-        paddingTop: 10,
-      }}
-    >
-      <View className="flex-1 px-4">
+    <View className="flex-1 dark:bg-zinc-900">
+      <View className="px-4 pt-4 bg-zinc-900 z-10">
         <Header />
-        <InforCarSalary userId={user?.id as string} />
-        {/* <View className="mt-8">
-          <TransactionsPage userId={user?.id as string} />
-        </View> */}
       </View>
+
+      <FlatList
+        data={[1]}
+        renderItem={() => (
+          <View className="px-4">
+            <InforCarSalary userId={user?.id as string} />
+            <View className="mt-6">
+              <LastestTransactionsPage userId={user?.id as string} />
+            </View>
+          </View>
+        )}
+        keyExtractor={(item) => item.toString()}
+        contentContainerStyle={{
+          paddingBottom: 20,
+        }}
+        showsVerticalScrollIndicator={true}
+        ListEmptyComponent={null}
+      />
     </View>
   );
 };
