@@ -139,16 +139,14 @@ export class TransactionService {
   ): Promise<Transaction> {
     try {
       const response = await api.put<Transaction>(
-        `/transaction/update`,
+        `/transaction/data/update`,
         updateData
       );
       return response.data;
-    } catch (error) {
-      console.error("Erro ao atualizar transação:", error);
+    } catch (error: any) {
       throw error;
     }
   }
-
   /**
    * Atualização parcial da transação (PATCH)
    */

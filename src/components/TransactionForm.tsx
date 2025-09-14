@@ -110,47 +110,48 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     try {
       const normalizedDescription = description
         ? description.toUpperCase()
-        : undefined;
+        : null;
 
-      const transactionData: TransactionPropsCreater = {
-        userId,
-        type,
-        amount: parseFloat(amount),
-        description: normalizedDescription || null,
-        date: date.toISOString(),
-        isRecurring,
-        recurringId: isRecurring ? `recurring_${Date.now()}` : null,
-      };
-
-      const transactionDataUpdate: TransactionUpdateProps = {
-        id: transactionId!,
-        userId,
-        amount: parseFloat(amount),
-        date: date.toISOString(),
-        isRecurring,
-        type,
-        description: normalizedDescription || null,
-        recurringId: isRecurring ? `recurring_${Date.now()}` : null,
-      };
-
-      if (mode === "edit" && transaction && onUpdate) {
+      if (mode === "edit" && transaction && onUpdate && transactionId) {
+        const transactionDataUpdate: TransactionUpdateProps = {
+          id: transactionId,
+          userId,
+          amount: parseFloat(amount),
+          date: date.toISOString(),
+          isRecurring,
+          type,
+          description: normalizedDescription,
+          recurringId: isRecurring ? `recurring_${Date.now()}` : null,
+        };
         await onUpdate(transactionDataUpdate);
         Alert.alert("Sucesso", "Transação atualizada com sucesso!");
-        refetch?.();
+        await refetch?.();
       } else {
+        const transactionData: TransactionPropsCreater = {
+          userId,
+          type,
+          amount: parseFloat(amount),
+          description: normalizedDescription,
+          date: date.toISOString(),
+          isRecurring,
+          recurringId: isRecurring ? `recurring_${Date.now()}` : null,
+        };
         await onSubmit?.(transactionData);
         Alert.alert("Sucesso", "Transação criada com sucesso!");
         resetForm();
-        refetch?.();
+        await refetch?.();
       }
     } catch (error) {
+      console.error("Transaction error:", error);
       const errorMessage =
         mode === "edit"
-          ? "Não foi possível atualizar a transação. Tente novamente." + error
+          ? "Não foi possível atualizar a transação. Tente novamente."
           : "Não foi possível criar a transação. Tente novamente.";
 
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+      }
       Alert.alert("Erro", errorMessage);
-      console.error("Transaction error:", error);
     } finally {
       setIsLoading(false);
     }

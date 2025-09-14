@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "myfinance",
-    "slug": "My Finance",
+    "name": "My Finance",
+    "slug": "myfinance",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -18,7 +18,8 @@
       },
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "pan",
-      "backgroundColor": "#1E1E1E"
+      "backgroundColor": "#1E1E1E",
+      "package": "com.glopblog.myfinance"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +43,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "248282b1-7289-4555-823c-d4dbd7c49046"
+      }
     }
   }
 }
