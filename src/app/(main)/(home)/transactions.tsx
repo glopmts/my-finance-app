@@ -1,17 +1,13 @@
 import TransactionsPage from "@/components/home/card-transactions-user";
+import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const Transactions = () => {
   const { user, loading, isAuthenticated } = useClerkUser();
 
   if (loading) {
-    return (
-      <View className="flex-1 w-full h-full items-center justify-center dark:bg-zinc-900">
-        <ActivityIndicator size="large" />
-        <Text className="text-white mt-6">Carregando usuário...</Text>
-      </View>
-    );
+    return <InlineLoading size="small" />;
   }
 
   if (!isAuthenticated) {

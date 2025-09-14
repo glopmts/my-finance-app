@@ -74,7 +74,7 @@ export default function SignIn() {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         Alert.alert("Sucesso", "Login realizado com sucesso!");
-        router.push("/(main)/(home)/index");
+        router.push("/(main)/(home)");
       } else {
         Alert.alert("Erro", "Falha ao verificar o código.");
       }
@@ -95,9 +95,9 @@ export default function SignIn() {
           ToastAndroid.BOTTOM,
           50
         );
-        router.push("/(main)");
+        router.push("/(main)/(home)");
       } else {
-        router.push("/(main)");
+        router.push("/(main)/(home)");
       }
     } catch (err) {
       if (err instanceof Error) {

@@ -97,6 +97,22 @@ export class TransactionService {
     }
   }
 
+  static async getTransactionLimit({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<TransactionResponse> {
+    try {
+      const response = await api.get<TransactionResponse>(
+        `/transaction/latest/${userId}?limit=${5}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao listar transações:", error);
+      throw error;
+    }
+  }
+
   /**
    * Buscar transações por usuário
    */
@@ -117,7 +133,6 @@ export class TransactionService {
    * Atualizar transação
    */
   static async update(
-    id: string,
     updateData: TransactionUpdateProps
   ): Promise<Transaction> {
     try {

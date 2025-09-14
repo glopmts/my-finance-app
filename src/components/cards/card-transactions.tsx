@@ -97,7 +97,15 @@ const CardTransaction = ({
   };
 
   return (
-    <View>
+    <View
+      className={`
+      relative overflow-hidden border-zinc-200/50 bg-zinc-50/30 
+      backdrop-blur-sm transition-all duration-200 hover:border-zinc-300/60 
+      hover:bg-zinc-50/50 hover:shadow-sm dark:border-zinc-800/50 
+      dark:bg-zinc-950 dark:hover:border-zinc-700/60
+      rounded-3xl mb-3 border
+    `}
+    >
       <CustomTouchableOpacity
         onLongPress={() => handleTransaction(transaction.id)}
       >

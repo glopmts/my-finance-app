@@ -19,6 +19,16 @@ export interface Salary {
   updatedAt: string;
 }
 
+export interface SalaryCreater {
+  userId: string;
+  amount: number;
+  description: string | null;
+  paymentDate: string;
+  frequency: Frequency;
+  isRecurring: boolean;
+  createdAt: string;
+}
+
 export interface TransactionProps {
   userId: string;
   description?: string | null;

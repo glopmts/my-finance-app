@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -15,21 +15,33 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import { TransactionPropsCreater, TransactionType } from "../types/interfaces";
-import { createTransactionStyles } from "./styles/creater-transactions";
+import {
+  Transaction,
+  TransactionPropsCreater,
+  TransactionType,
+} from "../types/interfaces";
+import { createTransactionStyles } from "./styles/form-transactions";
 
-interface CreateTransactionFormProps {
+interface TransactionFormProps {
   userId: string;
   categories?: { id: string; name: string }[];
-  onSubmit: (transaction: TransactionPropsCreater) => Promise<void>;
+  transaction?: Transaction;
+  mode?: "create" | "edit";
+  onSubmit?: (transaction: TransactionPropsCreater) => Promise<void>;
+  onUpdate?: (transaction: TransactionPropsCreater) => Promise<void>;
   onCancel?: () => void;
+  refetch?: () => void;
 }
 
-const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
+const TransactionForm: React.FC<TransactionFormProps> = ({
   userId,
   categories = [],
+  transaction,
+  mode = "create",
   onSubmit,
+  onUpdate,
   onCancel,
+  refetch,
 }) => {
   const [type, setType] = useState<TransactionType>("EXPENSE");
   const [amount, setAmount] = useState("");
@@ -44,6 +56,18 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
 
   // Get dynamic styles based on color scheme
   const styles = createTransactionStyles(deviceColorScheme);
+
+  // Preencher dados quando em modo de edição
+  useEffect(() => {
+    if (mode === "edit" && transaction) {
+      setType(transaction.type);
+      setAmount(transaction.amount.toString());
+      setDescription(transaction.description || "");
+      setDate(new Date(transaction.date));
+      setIsRecurring(transaction.isRecurring || false);
+      setCategoryId(transaction.categoryId || null);
+    }
+  }, [mode, transaction]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -64,6 +88,16 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  const resetForm = () => {
+    setType("EXPENSE");
+    setAmount("");
+    setDescription("");
+    setDate(new Date());
+    setIsRecurring(false);
+    setCategoryId(null);
+    setErrors({});
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       return;
@@ -71,7 +105,7 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
 
     setIsLoading(true);
     try {
-      const transaction: TransactionPropsCreater = {
+      const transactionData: TransactionPropsCreater = {
         userId,
         type,
         amount: parseFloat(amount),
@@ -81,25 +115,24 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
         recurringId: isRecurring ? `recurring_${Date.now()}` : null,
       };
 
-      await onSubmit(transaction);
-
-      // Reset form
-      setAmount("");
-      setDescription("");
-      setDate(new Date());
-      setIsRecurring(false);
-      setCategoryId(null);
-      setErrors({});
-
-      Alert.alert("Sucesso", "Transação criada com sucesso!");
+      if (mode === "edit" && transaction && onUpdate) {
+        await onUpdate(transactionData);
+        Alert.alert("Sucesso", "Transação atualizada com sucesso!");
+        refetch?.();
+      } else {
+        await onSubmit?.(transactionData);
+        Alert.alert("Sucesso", "Transação criada com sucesso!");
+        resetForm();
+        refetch?.();
+      }
     } catch (error) {
-      Alert.alert(
-        "Erro",
-        "Não foi possível criar a transação. Tente novamente." + error
-      );
-      console.log(
-        "Não foi possível criar a transação. Tente novamente." + error
-      );
+      const errorMessage =
+        mode === "edit"
+          ? "Não foi possível atualizar a transação. Tente novamente."
+          : "Não foi possível criar a transação. Tente novamente.";
+
+      Alert.alert("Erro", errorMessage);
+      console.error("Transaction error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -113,16 +146,20 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
   };
 
   const formatCurrency = (value: string) => {
-    // Remove non-numeric characters
-    const numericValue = value.replace(/[^0-9.]/g, "");
+    const numericValue = value.replace(/[^0-9.,]/g, "");
 
-    // Ensure only one decimal point
-    const parts = numericValue.split(".");
+    const normalizedValue = numericValue.replace(",", ".");
+
+    const parts = normalizedValue.split(".");
     if (parts.length > 2) {
       return parts[0] + "." + parts.slice(1).join("");
     }
 
-    return numericValue;
+    if (parts[1] && parts[1].length > 2) {
+      return parts[0] + "." + parts[1].substring(0, 2);
+    }
+
+    return normalizedValue;
   };
 
   const getTypeIcon = (transactionType: TransactionType) => {
@@ -151,13 +188,64 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
     return deviceColorScheme === "dark" ? "#71717a" : "#6b7280";
   };
 
+  const getTitle = () => {
+    return mode === "edit" ? "Editar Transação" : "Nova Transação";
+  };
+
+  const getSubmitButtonText = () => {
+    return mode === "edit" ? "Salvar Alterações" : "Criar Transação";
+  };
+
+  const getSubmitIcon = () => {
+    return mode === "edit" ? "save-outline" : "checkmark";
+  };
+
+  const handleCancel = () => {
+    if (mode === "create") {
+      // Confirmar se há dados não salvos
+      const hasUnsavedData = amount || description || isRecurring || categoryId;
+
+      if (hasUnsavedData) {
+        Alert.alert(
+          "Descartar alterações?",
+          "Você tem dados não salvos. Tem certeza que deseja sair?",
+          [
+            {
+              text: "Cancelar",
+              style: "cancel",
+            },
+            {
+              text: "Descartar",
+              style: "destructive",
+              onPress: () => {
+                resetForm();
+                onCancel?.();
+              },
+            },
+          ]
+        );
+      } else {
+        onCancel?.();
+      }
+    } else {
+      // Para modo de edição, apenas volta sem salvar
+      onCancel?.();
+    }
+  };
+
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
-          <Text style={styles.title}>Nova Transação</Text>
+          <Text style={styles.title}>{getTitle()}</Text>
           {onCancel && (
-            <TouchableOpacity onPress={onCancel} style={styles.closeButton}>
+            <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={getIconColor()} />
             </TouchableOpacity>
           )}
@@ -214,6 +302,7 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
               placeholderTextColor={
                 deviceColorScheme === "dark" ? "#71717a" : "#9ca3af"
               }
+              returnKeyType="next"
             />
           </View>
           {errors.amount && (
@@ -238,9 +327,13 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
             }
             multiline
             numberOfLines={3}
-            maxLength={255}
+            maxLength={20}
+            returnKeyType="done"
+            blurOnSubmit={true}
           />
-          <Text style={styles.charCount}>{description.length}/255</Text>
+          <View style={styles.charCountContainer}>
+            <Text style={styles.charCount}>{description.length}/20</Text>
+          </View>
           {errors.description && (
             <Text style={styles.errorText}>{errors.description}</Text>
           )}
@@ -282,6 +375,11 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
                 selectedValue={categoryId}
                 onValueChange={(itemValue) => setCategoryId(itemValue)}
                 style={styles.picker}
+                itemStyle={
+                  deviceColorScheme === "dark"
+                    ? { color: "#fff" }
+                    : { color: "#000" }
+                }
               >
                 <Picker.Item label="Selecione uma categoria" value={null} />
                 {categories.map((category) => (
@@ -324,7 +422,7 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
           {onCancel && (
             <TouchableOpacity
               style={[styles.button, styles.cancelButton]}
-              onPress={onCancel}
+              onPress={handleCancel}
               disabled={isLoading}
             >
               <Text style={styles.cancelButtonText}>Cancelar</Text>
@@ -335,23 +433,48 @@ const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
               styles.button,
               styles.submitButton,
               { backgroundColor: getTypeColor(type) },
+              isLoading && styles.buttonDisabled,
             ]}
             onPress={handleSubmit}
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#fff" size="small" />
             ) : (
               <>
-                <Ionicons name="checkmark" size={20} color="#fff" />
-                <Text style={styles.submitButtonText}>Criar Transação</Text>
+                <Ionicons
+                  name={getSubmitIcon() as any}
+                  size={20}
+                  color="#fff"
+                />
+                <Text style={styles.submitButtonText}>
+                  {getSubmitButtonText()}
+                </Text>
               </>
             )}
           </TouchableOpacity>
         </View>
+
+        {/* Show additional info for edit mode */}
+        {mode === "edit" && transaction && (
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoText}>
+              Criado em:{" "}
+              {new Date(
+                transaction.createdAt || transaction.date
+              ).toLocaleDateString("pt-BR")}
+            </Text>
+            {transaction.updatedAt && (
+              <Text style={styles.infoText}>
+                Última atualização:{" "}
+                {new Date(transaction.updatedAt).toLocaleDateString("pt-BR")}
+              </Text>
+            )}
+          </View>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-export default CreateTransactionForm;
+export default TransactionForm;

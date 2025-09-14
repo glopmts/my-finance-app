@@ -1,12 +1,14 @@
-import CreateTransactionForm from "@/components/CreateTransactionForm";
+import CreateTransactionForm from "@/components/TransactionForm";
 import { useClerkUser } from "@/hooks/useClerkUser";
-import TransactionService from "@/services/transactions.service";
+import { TransactionService } from "@/services/transactions.service";
 import { TransactionPropsCreater } from "@/types/interfaces";
+import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 
 const NewsTransactionPage = () => {
   const { user, loading } = useClerkUser();
+  const router = useRouter();
 
   const handleSubmit = async (transaction: TransactionPropsCreater) => {
     await TransactionService.create(transaction);
@@ -21,12 +23,17 @@ const NewsTransactionPage = () => {
     );
   }
 
+  const handleCancel = () => {
+    router.push("/(main)/(home)");
+  };
+
   return (
     <View className="flex-1">
       <CreateTransactionForm
         userId={user?.id as string}
         onSubmit={handleSubmit}
-        onCancel={() => console.log("Cancelado")}
+        mode="create"
+        onCancel={handleCancel}
       />
     </View>
   );

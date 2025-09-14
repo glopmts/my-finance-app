@@ -10,7 +10,18 @@ import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
+
+import { UserProvider } from "../contexts/UserContext";
 import "./global.css";
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: true,
+});
 
 SplashScreen.setOptions({
   duration: 1000,
@@ -40,21 +51,22 @@ function RootLayoutNav() {
 
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style="auto" />
       <GestureHandlerRootView
         style={{
           flex: 1,
-          backgroundColor: "#1E1E1E",
           paddingTop: 0,
         }}
       >
         <PortalProvider>
           <PaperProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            ></Stack>
+            <UserProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }}
+              ></Stack>
+            </UserProvider>
           </PaperProvider>
         </PortalProvider>
       </GestureHandlerRootView>

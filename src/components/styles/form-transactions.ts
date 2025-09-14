@@ -188,5 +188,31 @@ export const createTransactionStyles = (colorScheme: ColorSchemeName) => {
       fontWeight: "600",
       color: "#fff",
     },
+    infoContainer: {
+      marginTop: 16,
+      padding: 12,
+      backgroundColor: colorScheme === "dark" ? "#27272a" : "#f9fafb",
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colorScheme === "dark" ? "#3f3f46" : "#e5e7eb",
+    },
+
+    infoText: {
+      fontSize: 12,
+      color: colorScheme === "dark" ? "#a1a1aa" : "#6b7280",
+      marginBottom: 4,
+      fontStyle: "italic",
+    },
+
+    buttonDisabled: {
+      opacity: 0.6,
+      elevation: 0,
+      shadowOpacity: 0,
+    },
+
+    charCountContainer: {
+      alignItems: "flex-end",
+      marginTop: 4,
+    },
   });
 };

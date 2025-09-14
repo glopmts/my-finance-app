@@ -57,7 +57,7 @@ export default function SignIn() {
 
       await completeSignIn.createdSessionId;
       Alert.alert("Sucesso", "Login realizado com sucesso!");
-      router.push("/(main)");
+      router.push("/(main)/(home)");
     } catch (err: any) {
       Alert.alert("Erro", err.errors[0].message);
     }
@@ -86,10 +86,9 @@ export default function SignIn() {
           ToastAndroid.BOTTOM,
           50
         );
-        router.push("/(main)/(home)/index");
+        router.push("/(main)/(home)");
       } else {
-        // Se não houver sessionId mas o fluxo foi completo, redirecione
-        router.push("/(main)/(home)/index");
+        router.push("/(main)/(home)");
       }
     } catch (err) {
       if (err instanceof Error) {

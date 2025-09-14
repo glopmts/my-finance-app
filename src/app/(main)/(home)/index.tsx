@@ -1,18 +1,14 @@
 import Header from "@/components/Header";
 import InforCarSalary from "@/components/home/card-infor-salary";
+import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const HomePage = () => {
   const { user, loading, error, isAuthenticated } = useClerkUser();
 
   if (loading) {
-    return (
-      <View className="flex-1 w-full h-full items-center justify-center dark:bg-zinc-900">
-        <ActivityIndicator size="large" />
-        <Text className="dark:text-white">Carregando usuário...</Text>
-      </View>
-    );
+    return <InlineLoading message="Carregando..." size="large" />;
   }
 
   if (error) {
@@ -26,7 +22,9 @@ const HomePage = () => {
   if (!isAuthenticated) {
     return (
       <View className="flex-1 w-full h-full items-center justify-center dark:bg-zinc-900">
-        <Text className="dark:text-white">Usuário não autenticado</Text>
+        <Text className="dark:text-white font-semibold text-2xl">
+          Usuário não autenticado
+        </Text>
       </View>
     );
   }

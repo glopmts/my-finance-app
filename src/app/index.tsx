@@ -21,7 +21,7 @@ export default function Index() {
   }
 
   if (isSignedIn) {
-    return <Redirect href="/(main)" />;
+    return <Redirect href="/(main)/(home)" />;
   }
 
   return (
@@ -29,7 +29,7 @@ export default function Index() {
       {isSignedIn ? (
         <Redirect href="/(auth)/sign-in" />
       ) : (
-        <Redirect href="/(main)" />
+        <Redirect href="/(main)/(home)" />
       )}
     </View>
   );
