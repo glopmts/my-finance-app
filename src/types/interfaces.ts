@@ -1,10 +1,10 @@
-export type Frequency =
-  | "WEEKLY"
-  | "BIWEEKLY"
-  | "MONTHLY"
-  | "QUARTERLY"
-  | "YEARLY";
-
+export enum Frequency {
+  WEEKLY = "WEEKLY",
+  BIWEEKLY = "BIWEEKLY",
+  MONTHLY = "MONTHLY",
+  YEARLY = "YEARLY",
+  QUARTERLY = "QUARTERLY",
+}
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER";
 
 export interface Salary {

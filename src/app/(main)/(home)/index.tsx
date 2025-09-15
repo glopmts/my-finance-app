@@ -3,10 +3,23 @@ import InforCarSalary from "@/components/home/card-infor-salary";
 import LastestTransactionsPage from "@/components/home/lastest-user-transactions";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
+import { SplashScreen } from "expo-router";
+import { useEffect } from "react";
 import { FlatList, Text, View } from "react-native";
+
+SplashScreen.preventAutoHideAsync();
 
 const HomePage = () => {
   const { user, loading, error, isAuthenticated } = useClerkUser();
+
+  useEffect(() => {
+    if (loading) {
+      const hideSplash = async () => {
+        await SplashScreen.hideAsync();
+      };
+      hideSplash();
+    }
+  }, [loading]);
 
   if (loading) {
     return <InlineLoading message="Carregando..." size="large" />;
@@ -41,7 +54,9 @@ const HomePage = () => {
         data={[1]}
         renderItem={() => (
           <View className="px-4">
+            {/* salary */}
             <InforCarSalary userId={user?.id as string} />
+            {/* transactions */}
             <View className="mt-6">
               <LastestTransactionsPage userId={user?.id as string} />
             </View>

@@ -1,7 +1,8 @@
 import GetSalaryQuery from "@/services/query/salary.query";
 import GetTransactionsQuery from "@/services/query/transactions.query";
 import { TransactionProps } from "@/types/interfaces";
-import { ActivityIndicator, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Alert from "../Alert-Infor";
 import SalaryCard from "../cards/card-salary";
 import ProgressBar from "../ProgressBar";
@@ -13,6 +14,7 @@ type PropsUser = {
 const InforCarSalary = ({ userId }: PropsUser) => {
   const { salary, error, isLoading, refetch } = GetSalaryQuery(userId);
   const { mockTransaction, loader } = GetTransactionsQuery(userId);
+  const router = useRouter();
 
   function calculateTotalExpenses(transactions: TransactionProps[]) {
     if (!Array.isArray(transactions)) return 0;
@@ -37,7 +39,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
         title="Salário não encontrado"
         message="Cadastre seu salário para começar a controlar suas finanças"
         actionText="Cadastrar Salário"
-        onActionPress={() => console.log("Cadastrar salário")}
+        onActionPress={() => router.push("/(main)/salary-form")}
       />
     );
   }
@@ -49,22 +51,35 @@ const InforCarSalary = ({ userId }: PropsUser) => {
         title="Nenhuma transação encontrada!"
         message="Você ainda não possui transações cadastradas. Adicione sua primeira transação"
         actionText="Cadastrar Salário"
-        onActionPress={() => console.log("Cadastrar salário")}
+        onActionPress={() => router.push("/(main)/(home)/news-transaction")}
       />
     );
   }
+
+  const handleRefetch = async () => {
+    await refetch();
+  };
 
   const maxValue = salary[0]?.amount || 0;
   const totalExpenses = calculateTotalExpenses(mockTransaction);
   const progressValue = Math.min((totalExpenses / maxValue) * 100, 100);
   const isOverLimit = totalExpenses > maxValue;
+  const hasSalary = salary && salary.length > 0 && salary[0];
 
   return (
     <View>
-      <View className="mb-4">
+      <View className="mb-4 flex-row justify-between">
         <Text className="dark:text-white font-semibold text-2xl">
           Gestão de Salários
         </Text>
+        <TouchableOpacity
+          onPress={() => router.push("/(main)/salary-form")}
+          className="dark:bg-zinc-800 bg-gray-300 shadow p-2 px-3 rounded-full"
+        >
+          <Text className="dark:text-zinc-300 font-semibold text-xl">
+            {hasSalary ? "Atualizar Salario" : "Add Salario"}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View>

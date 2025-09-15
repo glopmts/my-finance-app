@@ -1,4 +1,4 @@
-import { useSignIn, useSSO } from "@clerk/clerk-expo";
+import { useAuth, useSignIn, useSSO } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -15,7 +15,8 @@ import {
 import * as AuthSession from "expo-auth-session";
 
 export default function SignIn() {
-  const { signIn, isLoaded } = useSignIn();
+  const { signIn, isLoaded, setActive } = useSignIn();
+  const { isSignedIn } = useAuth();
   const router = useRouter();
 
   const [emailAddress, setEmailAddress] = useState("");
@@ -24,6 +25,12 @@ export default function SignIn() {
   const [isLoader, setIsLoader] = useState(false);
 
   const { startSSOFlow } = useSSO();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace("/(main)/(home)");
+    }
+  }, [isSignedIn]);
 
   const onSendCodePress = async () => {
     if (!isLoaded) {
@@ -54,46 +61,46 @@ export default function SignIn() {
         strategy: "email_code",
         code,
       });
-
-      await completeSignIn.createdSessionId;
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
-      router.push("/(main)/(home)");
+      if (
+        completeSignIn.status === "complete" &&
+        completeSignIn.createdSessionId
+      ) {
+        await setActive({ session: completeSignIn.createdSessionId });
+        Alert.alert("Sucesso", "Login realizado com sucesso!");
+        router.replace("/(main)/(home)");
+      } else {
+        Alert.alert("Erro", "Falha ao completar o login");
+      }
     } catch (err: any) {
       Alert.alert("Erro", err.errors[0].message);
     }
   };
 
-  useEffect(() => {
-    if (router.canGoBack()) {
-      router.replace("/(auth)/sign-up");
-    }
-  }, [router]);
-
   const onGoogleSignInPress = async () => {
     setIsLoader(true);
     try {
-      const { createdSessionId, setActive, signIn, signUp } =
-        await startSSOFlow({
-          strategy: "oauth_google",
-
-          redirectUrl: AuthSession.makeRedirectUri(),
-        });
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_google",
+        redirectUrl: AuthSession.makeRedirectUri({
+          path: "/(auth)/oauth-callback",
+          isTripleSlashed: true,
+        }),
+      });
 
       if (createdSessionId && setActive) {
-        await setActive({ session: createdSessionId, redirectUrl: "" });
+        await setActive({ session: createdSessionId });
         ToastAndroid.showWithGravity(
           "Login com Google realizado com sucesso!",
           ToastAndroid.BOTTOM,
           50
         );
-        router.push("/(main)/(home)");
+        router.replace("/(main)/(home)");
       } else {
-        router.push("/(main)/(home)");
+        Alert.alert("Erro", "Falha no login com Google");
       }
     } catch (err) {
       if (err instanceof Error) {
         Alert.alert("Erro", err.message);
-        setIsLoader(false);
       }
     } finally {
       setIsLoader(false);
@@ -147,13 +154,7 @@ export default function SignIn() {
       )}
 
       <View className="mt-2 mb-4">
-        <Text
-          style={{
-            color: "#ffff",
-          }}
-        >
-          Ou
-        </Text>
+        <Text className="text-white">Ou</Text>
       </View>
 
       <TouchableOpacity

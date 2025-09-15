@@ -1,5 +1,6 @@
 import { use5TransactionsQuery } from "@/services/query/transactions.query";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
 import Alert from "../Alert-Infor";
@@ -45,8 +46,8 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
         type="warning"
         title="Nenhuma transação encontrada!"
         message="Você ainda não possui transações cadastradas. Adicione sua primeira transação"
-        actionText="Cadastrar Salário"
-        onActionPress={() => console.log("Cadastrar salário")}
+        actionText="Cadastrar transação"
+        onActionPress={() => router.push("/news-transaction")}
       />
     );
   }

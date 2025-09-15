@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
 
 export const useClerkUser = () => {
-  const { userId, isLoaded } = useAuth();
+  const { userId, isLoaded, signOut } = useAuth();
   const { user, fetchUser, loading, error } = useUser();
 
   useEffect(() => {
@@ -17,6 +17,7 @@ export const useClerkUser = () => {
     user,
     loading: loading || !isLoaded,
     error,
+    signOut,
     isAuthenticated: !!userId,
   };
 };

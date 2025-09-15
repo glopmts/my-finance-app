@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -138,6 +139,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         };
         await onSubmit?.(transactionData);
         Alert.alert("Sucesso", "Transação criada com sucesso!");
+        router.reload();
         resetForm();
         await refetch?.();
       }
@@ -292,8 +294,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 {t === "INCOME"
                   ? "Receita"
                   : t === "EXPENSE"
-                  ? "Despesa"
-                  : "Transferência"}
+                    ? "Despesa"
+                    : "Transferência"}
               </Text>
             </TouchableOpacity>
           ))}
@@ -427,8 +429,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               isRecurring
                 ? "#10b981"
                 : deviceColorScheme === "dark"
-                ? "#71717a"
-                : "#f3f4f6"
+                  ? "#71717a"
+                  : "#f3f4f6"
             }
           />
         </View>
