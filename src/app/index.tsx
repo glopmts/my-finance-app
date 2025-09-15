@@ -1,9 +1,22 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Index() {
   const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded) {
+      const hideSplash = async () => {
+        await SplashScreen.hideAsync();
+      };
+      hideSplash();
+    }
+  }, [isLoaded]);
 
   if (!isLoaded) {
     return (
@@ -24,13 +37,5 @@ export default function Index() {
     return <Redirect href="/(main)/(home)" />;
   }
 
-  return (
-    <View>
-      {isSignedIn ? (
-        <Redirect href="/(auth)/sign-in" />
-      ) : (
-        <Redirect href="/(main)/(home)" />
-      )}
-    </View>
-  );
+  return <Redirect href="/(auth)/sign-in" />;
 }
