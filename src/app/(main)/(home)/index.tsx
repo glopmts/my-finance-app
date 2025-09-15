@@ -4,7 +4,6 @@ import LastestTransactionsPage from "@/components/home/lastest-user-transactions
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { FlatList, Text, View } from "react-native";
-import UpdateChecker from "../../../components/UpdateChecker";
 
 const HomePage = () => {
   const { user, loading, error, isAuthenticated } = useClerkUser();
@@ -36,7 +35,7 @@ const HomePage = () => {
       <View className="px-4 pt-4 bg-zinc-900 z-10">
         <Header />
       </View>
-      <UpdateChecker autoCheck={true} showManualButton={false} />
+      {/* <UpdateChecker autoCheck={true} showManualButton={false} /> */}
 
       <FlatList
         data={[1]}

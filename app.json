@@ -14,7 +14,11 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/248282b1-7289-4555-823c-d4dbd7c49046"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     },
     "android": {
       "adaptiveIcon": {
