@@ -47,15 +47,20 @@ export class TransactionService {
     transactionData: TransactionPropsCreater
   ): Promise<Transaction> {
     try {
+      const cleanedData = {
+        ...transactionData,
+        description: transactionData.description || null,
+        recurringId: transactionData.recurringId || null,
+      };
+
       const response = await api.post<Transaction>(
         "/transaction/creater",
-        transactionData
+        cleanedData
       );
-      console.log(transactionData);
       return response.data;
-    } catch (error) {
-      console.error("Erro ao criar transação:", error);
-      throw error;
+    } catch (error: any) {
+      console.error("Erro detalhado ao criar transação:", error.response?.data);
+      throw new Error(error.response?.data?.error || "Erro ao criar transação");
     }
   }
 

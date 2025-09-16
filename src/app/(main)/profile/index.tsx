@@ -13,6 +13,10 @@ import {
   View,
 } from "react-native";
 
+import { QueryClient } from "@tanstack/react-query";
+import Constants from "expo-constants";
+const queryClient = new QueryClient();
+
 const Profile = () => {
   const { user, loading, error, isAuthenticated, signOut } = useClerkUser();
   const router = useRouter();
@@ -30,9 +34,14 @@ const Profile = () => {
         style: "destructive",
         onPress: async () => {
           try {
+            queryClient.clear();
+
             setIsSigningOut(true);
             await signOut();
             router.replace("/(auth)/sign-in");
+            setTimeout(() => {
+              router.reload();
+            }, 100);
           } catch (error) {
             console.error("Erro ao fazer logout:", error);
             Alert.alert(
@@ -231,36 +240,6 @@ const Profile = () => {
           </Text>
 
           <ProfileOption
-            icon="person-outline"
-            title="Editar Perfil"
-            subtitle="Altere suas informações pessoais"
-            onPress={() => {
-              // Implementar navegação para editar perfil
-              Alert.alert("Em breve", "Funcionalidade em desenvolvimento");
-            }}
-          />
-
-          <ProfileOption
-            icon="notifications-outline"
-            title="Notificações"
-            subtitle="Gerencie suas notificações"
-            onPress={() => {
-              // Implementar navegação para notificações
-              Alert.alert("Em breve", "Funcionalidade em desenvolvimento");
-            }}
-          />
-
-          <ProfileOption
-            icon="shield-outline"
-            title="Privacidade e Segurança"
-            subtitle="Configure sua privacidade"
-            onPress={() => {
-              // Implementar navegação para privacidade
-              Alert.alert("Em breve", "Funcionalidade em desenvolvimento");
-            }}
-          />
-
-          <ProfileOption
             icon="help-circle-outline"
             title="Ajuda e Suporte"
             subtitle="Central de ajuda"
@@ -275,8 +254,10 @@ const Profile = () => {
             title="Sobre o App"
             subtitle="Versão, termos e políticas"
             onPress={() => {
-              // Implementar navegação para sobre
-              Alert.alert("Sobre", "Versão 1.0.0");
+              Alert.alert(
+                "Sobre o App",
+                `Versão: ${Constants.expoConfig?.version || "1.0.0"}\nBuild: ${Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || "N/A"}`
+              );
             }}
           />
         </View>

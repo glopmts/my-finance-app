@@ -8,12 +8,13 @@ import {
   TransactionUpdateProps,
 } from "@/services/transactions.service";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View } from "react-native";
+import { Alert, Platform, ToastAndroid, View } from "react-native";
 
 const EditerTransaction = () => {
   const { id } = useLocalSearchParams();
   const transactionId = id as string;
   const { user, loading } = useClerkUser();
+  const userId = user?.id as string;
   const router = useRouter();
 
   const {
@@ -45,6 +46,52 @@ const EditerTransaction = () => {
     router.push("/(main)/(home)");
   };
 
+  const handleDelete = async (transactionId: string) => {
+    Alert.alert(
+      "Confirmar exclusão",
+      "Tem certeza que deseja excluir esta transação?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await TransactionService.delete(transactionId, userId);
+
+              if (Platform.OS === "android") {
+                ToastAndroid.show(
+                  "Transação excluída com sucesso!",
+                  ToastAndroid.SHORT
+                );
+                router.back();
+                refetchTransaction();
+              } else {
+                Alert.alert("Sucesso", "Transação excluída com sucesso!");
+                router.back();
+                refetchTransaction();
+              }
+            } catch (error) {
+              if (Platform.OS === "android") {
+                ToastAndroid.show(
+                  "Erro ao excluir transação",
+                  ToastAndroid.SHORT
+                );
+              } else {
+                Alert.alert("Erro", "Não foi possível excluir a transação");
+              }
+              console.error("Erro ao excluir transação:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View className="flex-1">
       <TransactionForm
@@ -55,6 +102,7 @@ const EditerTransaction = () => {
         onCancel={handleCancel}
         refetch={refetchTransaction}
         transactionId={transactionId}
+        handleDelete={handleDelete}
       />
     </View>
   );

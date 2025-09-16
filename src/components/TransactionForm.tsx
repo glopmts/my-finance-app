@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { EvilIcons, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
@@ -33,6 +33,7 @@ interface TransactionFormProps {
   onSubmit?: (transaction: TransactionPropsCreater) => Promise<void>;
   onUpdate?: (transaction: TransactionUpdateProps) => Promise<void>;
   onCancel?: () => void;
+  handleDelete?: (transactionId: string) => void;
   refetch?: () => void;
 }
 
@@ -46,6 +47,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   onUpdate,
   onCancel,
   refetch,
+  handleDelete,
 }) => {
   const [type, setType] = useState<TransactionType>("EXPENSE");
   const [amount, setAmount] = useState("");
@@ -112,6 +114,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       const normalizedDescription = description
         ? description.toUpperCase()
         : null;
+      const parsedAmount =
+        typeof amount === "string" ? parseFloat(amount) : amount;
 
       if (mode === "edit" && transaction && onUpdate && transactionId) {
         const transactionDataUpdate: TransactionUpdateProps = {
@@ -126,12 +130,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         };
         await onUpdate(transactionDataUpdate);
         Alert.alert("Sucesso", "Transação atualizada com sucesso!");
-        await refetch?.();
+        refetch?.();
       } else {
         const transactionData: TransactionPropsCreater = {
           userId,
           type,
-          amount: parseFloat(amount),
+          amount: parsedAmount,
           description: normalizedDescription,
           date: date.toISOString(),
           isRecurring,
@@ -139,9 +143,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         };
         await onSubmit?.(transactionData);
         Alert.alert("Sucesso", "Transação criada com sucesso!");
-        router.reload();
+        router.push("/(main)/(home)");
         resetForm();
-        await refetch?.();
+        refetch?.();
       }
     } catch (error) {
       console.error("Transaction error:", error);
@@ -436,41 +440,53 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         </View>
 
         {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
-          {onCancel && (
+        <View className="flex flex-col gap-4">
+          <View className="flex-row gap-4">
+            {onCancel && (
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={handleCancel}
+                disabled={isLoading}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={handleCancel}
+              style={[
+                styles.button,
+                styles.submitButton,
+                { backgroundColor: getTypeColor(type) },
+                isLoading && styles.buttonDisabled,
+              ]}
+              onPress={handleSubmit}
               disabled={isLoading}
             >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
+              {isLoading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <>
+                  <Ionicons
+                    name={getSubmitIcon() as any}
+                    size={20}
+                    color="#fff"
+                  />
+                  <Text style={styles.submitButtonText}>
+                    {getSubmitButtonText()}
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+          {mode === "edit" && (
+            <TouchableOpacity
+              onPress={() => handleDelete && handleDelete(transaction?.id!)}
+              style={[styles.button]}
+              className="bg-red-500"
+            >
+              <EvilIcons name="trash" color="#fff" size={26} />
+              <Text style={styles.submitButtonText}>Deletar</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            style={[
-              styles.button,
-              styles.submitButton,
-              { backgroundColor: getTypeColor(type) },
-              isLoading && styles.buttonDisabled,
-            ]}
-            onPress={handleSubmit}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" size="small" />
-            ) : (
-              <>
-                <Ionicons
-                  name={getSubmitIcon() as any}
-                  size={20}
-                  color="#fff"
-                />
-                <Text style={styles.submitButtonText}>
-                  {getSubmitButtonText()}
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
         </View>
 
         {/* Show additional info for edit mode */}

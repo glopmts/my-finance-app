@@ -3,14 +3,20 @@ import InforCarSalary from "@/components/home/card-infor-salary";
 import LastestTransactionsPage from "@/components/home/lastest-user-transactions";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
-import { SplashScreen } from "expo-router";
-import { useEffect } from "react";
+import { useAuth } from "@clerk/clerk-expo";
+import { QueryClient } from "@tanstack/react-query";
+import { SplashScreen, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
+const queryClient = new QueryClient();
 
 const HomePage = () => {
   const { user, loading, error, isAuthenticated } = useClerkUser();
+  const { userId } = useAuth();
+  const router = useRouter();
+  const [prevUserId, setPrevUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) {
@@ -20,6 +26,14 @@ const HomePage = () => {
       hideSplash();
     }
   }, [loading]);
+
+  useEffect(() => {
+    if (prevUserId && prevUserId !== userId) {
+      queryClient.clear();
+      router.reload();
+    }
+    setPrevUserId(userId!);
+  }, [userId]);
 
   if (loading) {
     return <InlineLoading message="Carregando..." size="large" />;
