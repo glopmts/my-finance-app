@@ -66,6 +66,19 @@ export default function MainLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="upload-file-extrate"
+        options={{
+          title: "Extrato Bancário",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="file-upload"
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

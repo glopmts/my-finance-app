@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 
 import { useEffect, useState } from "react";
+import { ThemeProvider } from "../contexts/ThemeContext";
 import { UserProvider } from "../contexts/UserContext";
 import "./global.css";
 
@@ -57,11 +58,13 @@ function RootLayoutNav() {
           <UserProvider>
             <PortalProvider>
               <PaperProvider>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                  }}
-                ></Stack>
+                <ThemeProvider>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                    }}
+                  ></Stack>
+                </ThemeProvider>
               </PaperProvider>
             </PortalProvider>
           </UserProvider>

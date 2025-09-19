@@ -5,6 +5,7 @@ import { Link, useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import React, { forwardRef } from "react";
 import {
+  GestureResponderEvent,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
@@ -17,6 +18,8 @@ type DataProps = {
   refetch: () => void;
   handleDelete?: (id: string) => void;
   handleFixed?: (id: string) => void;
+  isSelected?: boolean;
+  onSelect?: () => void;
   handleEdite: (transaction: TransactionProps) => void;
 };
 
@@ -39,10 +42,26 @@ const CardTransaction = ({
   refetch,
   handleDelete,
   handleEdite,
+  isSelected,
+  onSelect,
 }: DataProps) => {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  const handleCheckboxClick = (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    onSelect?.();
+  };
+
+  const handleCardClick = (e: GestureResponderEvent) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
+    const interactiveElements = ["BUTTON", "A", "INPUT", "SELECT", "TEXTAREA"];
+    if (!interactiveElements.includes(e.target.tagName)) {
+      onSelect?.();
+    }
+  };
 
   if (!transaction) {
     return (
@@ -64,10 +83,6 @@ const CardTransaction = ({
       </View>
     );
   }
-
-  const handleFixed = (id: string) => {
-    // Implement fixed functionality
-  };
 
   const handleTransaction = (id: string) => {
     router.navigate({
@@ -108,6 +123,11 @@ const CardTransaction = ({
     >
       <CustomTouchableOpacity
         onLongPress={() => handleTransaction(transaction.id)}
+        onPress={handleCardClick}
+        activeOpacity={0.9}
+        className={`
+          ${isSelected ? "border-blue-500 border-2" : ""}
+        `}
       >
         <View className="absolute inset-0 bg-gradient-to-br from-zinc-50/20 to-transparent dark:from-zinc-800/20" />
 
@@ -118,6 +138,21 @@ const CardTransaction = ({
 
           <View className="flex flex-row justify-between items-center w-full mb-3">
             <View className="flex flex-row items-center gap-1.5 flex-1">
+              <View className="mr-3">
+                <TouchableOpacity
+                  onPress={handleCheckboxClick}
+                  className={`
+                    h-5 w-5 rounded-md border-2 flex items-center justify-center
+                    ${isSelected ? "bg-blue-500 border-blue-500" : "bg-transparent border-zinc-400 dark:border-zinc-600"}
+                  `}
+                >
+                  <Text>
+                    {isSelected && (
+                      <AntDesign name="check" size={16} color="white" />
+                    )}
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <View className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
                 <Entypo
                   name="upload-to-cloud"

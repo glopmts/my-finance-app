@@ -12,9 +12,11 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import ReactNativeRestart from "react-native-restart";
 
 import { QueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
+
 const queryClient = new QueryClient();
 
 const Profile = () => {
@@ -35,13 +37,13 @@ const Profile = () => {
         onPress: async () => {
           try {
             queryClient.clear();
-
             setIsSigningOut(true);
             await signOut();
-            router.replace("/(auth)/sign-in");
+
+            // Fecha e reabre o app
             setTimeout(() => {
-              router.reload();
-            }, 100);
+              ReactNativeRestart.restart();
+            }, 500);
           } catch (error) {
             console.error("Erro ao fazer logout:", error);
             Alert.alert(

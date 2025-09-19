@@ -188,7 +188,10 @@ export class TransactionService {
    */
   static async deleteMultiple(ids: string[]): Promise<void> {
     try {
-      await api.delete("/transaction/batch", { data: { ids } });
+      const response = await api.delete("/transaction/batch", {
+        data: { ids },
+      });
+      return response.data;
     } catch (error) {
       console.error("Erro ao excluir transações em lote:", error);
       throw error;
