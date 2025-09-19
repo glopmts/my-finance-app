@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
+  BackHandler,
   Image,
   ScrollView,
   Text,
@@ -12,7 +13,6 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import ReactNativeRestart from "react-native-restart";
 
 import { QueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
@@ -41,9 +41,16 @@ const Profile = () => {
             await signOut();
 
             // Fecha e reabre o app
-            setTimeout(() => {
-              ReactNativeRestart.restart();
-            }, 500);
+            if (Constants.platform?.ios) {
+              // iOS não permite fechar o app programaticamente
+              Alert.alert(
+                "Logout",
+                "Você foi desconectado. Por favor, feche e reabra o app."
+              );
+            } else if (Constants.platform?.android) {
+              // Android permite fechar o app programaticamente
+              BackHandler.exitApp();
+            }
           } catch (error) {
             console.error("Erro ao fazer logout:", error);
             Alert.alert(
