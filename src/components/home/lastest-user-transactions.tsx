@@ -3,7 +3,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
-import Alert from "../Alert-Infor";
+import Alert from "../alerts/Alert-Infor";
 import CardTransaction from "../cards/card-transactions";
 import ListWrapper from "../ListWrapper";
 

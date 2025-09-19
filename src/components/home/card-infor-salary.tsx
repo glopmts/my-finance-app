@@ -3,7 +3,7 @@ import GetTransactionsQuery from "@/services/query/transactions.query";
 import { TransactionProps } from "@/types/interfaces";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import Alert from "../Alert-Infor";
+import Alert from "../alerts/Alert-Infor";
 import SalaryCard from "../cards/card-salary";
 import ProgressBar from "../ProgressBar";
 

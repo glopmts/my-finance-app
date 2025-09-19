@@ -1,4 +1,4 @@
-import EmptyState from "@/components/EmptyState";
+import EmptyState from "@/components/alerts/EmptyState";
 import { InlineLoading } from "@/components/Loading";
 import TransactionForm from "@/components/TransactionForm";
 import { useClerkUser } from "@/hooks/useClerkUser";
