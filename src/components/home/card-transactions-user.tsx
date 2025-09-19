@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 import { TransactionService } from "../../services/transactions.service";
-import Alert from "../Alert-Infor";
+import Alert from "../alerts/Alert-Infor";
 import CardTransaction from "../cards/card-transactions";
 import DateSelector from "../DateSelectorProps";
 import ListWrapper from "../ListWrapper";
