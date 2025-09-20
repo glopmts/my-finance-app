@@ -1,4 +1,5 @@
 import EmptyState from "@/components/alerts/EmptyState";
+import { showPlatformMessage } from "@/components/alerts/ToastMessage";
 import { InlineLoading } from "@/components/Loading";
 import TransactionForm from "@/components/TransactionForm";
 import { useClerkUser } from "@/hooks/useClerkUser";
@@ -8,7 +9,7 @@ import {
   TransactionUpdateProps,
 } from "@/services/transactions.service";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, Platform, ToastAndroid, View } from "react-native";
+import { Alert, View } from "react-native";
 
 const EditerTransaction = () => {
   const { id } = useLocalSearchParams();
@@ -62,28 +63,16 @@ const EditerTransaction = () => {
             try {
               await TransactionService.delete(transactionId, userId);
 
-              if (Platform.OS === "android") {
-                ToastAndroid.show(
-                  "Transação excluída com sucesso!",
-                  ToastAndroid.SHORT
-                );
-                router.back();
-                refetchTransaction();
-              } else {
-                Alert.alert("Sucesso", "Transação excluída com sucesso!");
-                router.back();
-                refetchTransaction();
-              }
+              showPlatformMessage("Transação excluída com sucesso!");
+              router.push("/(main)/(home)");
+              Alert.alert("Sucesso", "Transação excluída com sucesso!");
+              refetchTransaction();
             } catch (error) {
-              if (Platform.OS === "android") {
-                ToastAndroid.show(
-                  "Erro ao excluir transação",
-                  ToastAndroid.SHORT
-                );
-              } else {
-                Alert.alert("Erro", "Não foi possível excluir a transação");
+              if (error instanceof Error) {
+                const errorMessage =
+                  error.message || "Erro ao excluir transação.";
+                showPlatformMessage(errorMessage);
               }
-              console.error("Erro ao excluir transação:", error);
             }
           },
         },

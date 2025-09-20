@@ -49,18 +49,14 @@ export default function UploadFile({
         type: ["application/pdf", "text/csv"],
         copyToCacheDirectory: true,
       });
-
       if (result.canceled) {
         return;
       }
-
       const file = result.assets[0];
-
       if (file.size && file.size > 10 * 1024 * 1024) {
         Alert.alert("Erro", "Arquivo muito grande. Tamanho máximo: 10MB");
         return;
       }
-
       setSelectedFile(file);
     } catch (err) {
       Alert.alert("Erro", "Erro ao selecionar arquivo");
@@ -72,7 +68,6 @@ export default function UploadFile({
 
     const formData = new FormData();
 
-    // Corrigindo a forma de anexar o arquivo
     formData.append("file", {
       uri: selectedFile.uri,
       type: selectedFile.type || "application/octet-stream",
@@ -87,21 +82,14 @@ export default function UploadFile({
       const response = await fetch(`${API_BASE_URL}/upload/creater`, {
         method: "POST",
         body: formData,
-        // Remover o header Content-Type para que o FormData defina automaticamente
-        // com o boundary correto
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || data.details || "Erro no upload");
+      if (response.status === 200) {
+        Alert.alert(
+          "Sucesso",
+          `Upload realizado com sucesso! ${data.savedCount || 0} transações processadas.`
+        );
       }
-
-      Alert.alert(
-        "Sucesso",
-        `Upload realizado com sucesso! ${data.savedCount || 0} transações processadas.`
-      );
-
       onUploadSuccess(data);
       refetch();
       setSelectedFile(null);
@@ -110,6 +98,7 @@ export default function UploadFile({
         "Erro",
         err instanceof Error ? err.message : "Erro ao fazer upload do arquivo"
       );
+      setIsUploading(false);
     } finally {
       setIsUploading(false);
     }

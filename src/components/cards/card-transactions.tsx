@@ -126,7 +126,7 @@ const CardTransaction = ({
         onPress={handleCardClick}
         activeOpacity={0.9}
         className={`
-          ${isSelected ? "border-blue-500 border-2" : ""}
+          ${isSelected ? "border-red-500 rounded-3xl border-2" : ""}
         `}
       >
         <View className="absolute inset-0 bg-gradient-to-br from-zinc-50/20 to-transparent dark:from-zinc-800/20" />

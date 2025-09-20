@@ -67,3 +67,9 @@ export interface Transaction {
   fixedId: string | null;
   categoryId: string | null;
 }
+
+export interface ApiResponse<T> {
+  data: T;
+  message: string;
+  status: number;
+}

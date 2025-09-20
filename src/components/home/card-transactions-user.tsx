@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { TransactionService } from "../../services/transactions.service";
 import Alert from "../alerts/Alert-Infor";
+import { showPlatformMessage } from "../alerts/ToastMessage";
 import CardTransaction from "../cards/card-transactions";
 import DateSelector from "../DateSelectorProps";
 import ListWrapper from "../ListWrapper";
@@ -122,18 +123,16 @@ const TransactionsPage = ({ userId }: PropsUser) => {
   };
 
   const handleDeleteMultiple = async (selectedIds: string[]) => {
+    setIsDeleting(true);
     try {
-      setIsDeleting(true);
       await TransactionService.deleteMultiple(selectedIds);
 
-      if (Platform.OS === "android") {
-        ToastAndroid.show(
-          "Transações deletadas com sucesso!",
-          ToastAndroid.SHORT
-        );
+      if (selectedIds.length === 1) {
+        showPlatformMessage("Transação deletada com sucesso!");
       } else {
-        AlertReact.alert("Transações deletadas com sucesso!");
+        showPlatformMessage("Transações deletadas com sucesso!");
       }
+
       await refetchTransactions();
       setSelectedTransactions([]);
       setIsSelecting10(false);
@@ -228,8 +227,8 @@ const TransactionsPage = ({ userId }: PropsUser) => {
         selectedDate={selectedDate}
         onDateChange={setSelectedDate}
       />
-      <View className="flex-row justify-end mb-2">
-        <View className="pb-4 flex-row gap-2.5">
+      <View className="flex-row justify-between w- mb-2">
+        <View className="pb-4 flex-row gap-2.5 w-full">
           <TouchableOpacity
             onPress={handleSelect10Transactions}
             className={`p-2 rounded-full dark:bg-zinc-800 bg-gray-300${
@@ -253,13 +252,14 @@ const TransactionsPage = ({ userId }: PropsUser) => {
             >
               {isDeleteing ? (
                 <ActivityIndicator size="small" color="#fff" />
-              ) : null}
-              <View className="flex items-center gap-2">
-                <Text className="text-sm font-semibold text-white text-center gap-3 flex-row">
-                  <Ionicons name="trash" size={16} color="white" />
-                  Excluir {selectedTransactions.length} selecionadas
-                </Text>
-              </View>
+              ) : (
+                <View className="flex items-center gap-2">
+                  <Text className="text-sm font-semibold text-white text-center gap-3 flex-row">
+                    <Ionicons name="trash" size={16} color="white" />
+                    Excluir {selectedTransactions.length} selecionadas
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           )}
         </View>
