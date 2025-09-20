@@ -2,6 +2,7 @@ import { useTransactionsQuery } from "@/services/query/transactions.query";
 import { TransactionProps } from "@/types/interfaces";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { endOfMonth, isWithinInterval, parseISO, startOfMonth } from "date-fns";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -271,7 +272,9 @@ const TransactionsPage = ({ userId }: PropsUser) => {
         emptyTitle="Nenhuma transação encontrada"
         emptyMessage="Comece adicionando sua primeira transação"
         emptyActionText="Nova Transação"
-        onEmptyActionPress={() => console.log("Nova transação")}
+        onEmptyActionPress={() =>
+          router.push("/(main)/(home)/news-transaction")
+        }
         keyExtractor={(item) => item.id}
         renderItem={(item, index) => (
           <CardTransaction
