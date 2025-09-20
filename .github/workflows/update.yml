@@ -8,10 +8,26 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+
     steps:
+      # Baixa o código do repositório
       - uses: actions/checkout@v3
+
+      # Configura Node.js com cache (mais rápido)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      # Instala Expo + EAS CLI
       - uses: expo/expo-github-action@v8
         with:
+          expo-version: latest # <--- adiciona essa linha
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - run: eas update --branch main --message "Update via GitHub Actions"
+
+      # Instala dependências
+      - run: npm install --frozen-lockfile
+
+      # Publica a atualização OTA
+      - run: eas update --channel preview --message "Preview update via GitHub Actions"
