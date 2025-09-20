@@ -8,6 +8,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { SplashScreen, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
+import UpdateChecker from "../../../components/UpdateChecker";
 
 SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
@@ -64,7 +65,7 @@ const HomePage = () => {
       </View>
 
       <View className="mt-3 pb-3">
-        {/* <UpdateChecker autoCheck={true} showManualButton={false} /> */}
+        <UpdateChecker autoCheck={true} showManualButton={false} />
       </View>
 
       <FlatList
