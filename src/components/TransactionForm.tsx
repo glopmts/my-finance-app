@@ -1,7 +1,6 @@
 import { EvilIcons, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -16,6 +15,7 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import { useTransactionForm } from "../hooks/useTransactionForm";
 import { TransactionUpdateProps } from "../services/transactions.service";
 import {
   Transaction,
@@ -49,21 +49,37 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   refetch,
   handleDelete,
 }) => {
-  const [type, setType] = useState<TransactionType>("EXPENSE");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [isRecurring, setIsRecurring] = useState(false);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const deviceColorScheme = useColorScheme();
-
-  // Get dynamic styles based on color scheme
   const styles = createTransactionStyles(deviceColorScheme);
 
-  // Preencher dados quando em modo de edição
+  const {
+    type,
+    amount,
+    description,
+    date,
+    isRecurring,
+    categoryId,
+    isLoading,
+    errors,
+    setType,
+    setAmount,
+    setDescription,
+    setDate,
+    setIsRecurring,
+    setCategoryId,
+    resetForm,
+    handleSubmit,
+    formatCurrency,
+  } = useTransactionForm({
+    userId,
+    transactionId,
+    transaction,
+    mode,
+    onSubmit,
+    onUpdate,
+    refetch,
+  });
+
   useEffect(() => {
     if (mode === "edit" && transaction) {
       setType(transaction.type);
@@ -73,118 +89,24 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       setIsRecurring(transaction.isRecurring || false);
       setCategoryId(transaction.categoryId || null);
     }
-  }, [mode, transaction]);
+  }, [
+    mode,
+    transaction,
+    setType,
+    setAmount,
+    setDescription,
+    setDate,
+    setIsRecurring,
+    setCategoryId,
+  ]);
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!amount || parseFloat(amount) <= 0) {
-      newErrors.amount = "O valor deve ser maior que zero";
-    }
-
-    if (!amount || isNaN(parseFloat(amount))) {
-      newErrors.amount = "Digite um valor válido";
-    }
-
-    if (description && description.length > 255) {
-      newErrors.description = "A descrição deve ter no máximo 255 caracteres";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const resetForm = () => {
-    setType("EXPENSE");
-    setAmount("");
-    setDescription("");
-    setDate(new Date());
-    setIsRecurring(false);
-    setCategoryId(null);
-    setErrors({});
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const normalizedDescription = description
-        ? description.toUpperCase()
-        : null;
-      const parsedAmount =
-        typeof amount === "string" ? parseFloat(amount) : amount;
-
-      if (mode === "edit" && transaction && onUpdate && transactionId) {
-        const transactionDataUpdate: TransactionUpdateProps = {
-          id: transactionId,
-          userId,
-          amount: parseFloat(amount),
-          date: date.toISOString(),
-          isRecurring,
-          type,
-          description: normalizedDescription,
-          recurringId: isRecurring ? `recurring_${Date.now()}` : null,
-        };
-        await onUpdate(transactionDataUpdate);
-        Alert.alert("Sucesso", "Transação atualizada com sucesso!");
-        refetch?.();
-      } else {
-        const transactionData: TransactionPropsCreater = {
-          userId,
-          type,
-          amount: parsedAmount,
-          description: normalizedDescription,
-          date: date.toISOString(),
-          isRecurring,
-          recurringId: isRecurring ? `recurring_${Date.now()}` : null,
-        };
-        await onSubmit?.(transactionData);
-        Alert.alert("Sucesso", "Transação criada com sucesso!");
-        router.push("/(main)/(home)");
-        resetForm();
-        refetch?.();
-      }
-    } catch (error) {
-      console.error("Transaction error:", error);
-      const errorMessage =
-        mode === "edit"
-          ? "Não foi possível atualizar a transação. Tente novamente."
-          : "Não foi possível criar a transação. Tente novamente.";
-
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-      }
-      Alert.alert("Erro", errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios");
     if (selectedDate) {
       setDate(selectedDate);
     }
-  };
-
-  const formatCurrency = (value: string) => {
-    const numericValue = value.replace(/[^0-9.,]/g, "");
-
-    const normalizedValue = numericValue.replace(",", ".");
-
-    const parts = normalizedValue.split(".");
-    if (parts.length > 2) {
-      return parts[0] + "." + parts.slice(1).join("");
-    }
-
-    if (parts[1] && parts[1].length > 2) {
-      return parts[0] + "." + parts[1].substring(0, 2);
-    }
-
-    return normalizedValue;
   };
 
   const getTypeIcon = (transactionType: TransactionType) => {
@@ -227,9 +149,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const handleCancel = () => {
     if (mode === "create") {
-      // Confirmar se há dados não salvos
       const hasUnsavedData = amount || description || isRecurring || categoryId;
-
       if (hasUnsavedData) {
         Alert.alert(
           "Descartar alterações?",
@@ -253,7 +173,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         onCancel?.();
       }
     } else {
-      // Para modo de edição, apenas volta sem salvar
       onCancel?.();
     }
   };

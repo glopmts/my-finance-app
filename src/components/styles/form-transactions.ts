@@ -19,7 +19,7 @@ export const createTransactionStyles = (colorScheme: ColorSchemeName) => {
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      padding: 10,
+      padding: 18,
       paddingTop: Platform.OS === "ios" ? 16 : 32,
     },
     header: {

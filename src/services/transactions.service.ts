@@ -1,5 +1,9 @@
 import { api } from "../lib/axios";
-import { TransactionPropsCreater, TransactionType } from "../types/interfaces";
+import {
+  ApiResponse,
+  TransactionPropsCreater,
+  TransactionType,
+} from "../types/interfaces";
 
 export interface Transaction extends TransactionPropsCreater {
   id: string;
@@ -186,11 +190,14 @@ export class TransactionService {
   /**
    * Excluir múltiplas transações
    */
-  static async deleteMultiple(ids: string[]): Promise<void> {
+  static async deleteMultiple(ids: string[]): Promise<ApiResponse<void>> {
     try {
-      const response = await api.delete("/transaction/batch", {
-        data: { ids },
-      });
+      const response = await api.delete<ApiResponse<void>>(
+        "/transaction/batch",
+        {
+          data: { ids },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Erro ao excluir transações em lote:", error);
