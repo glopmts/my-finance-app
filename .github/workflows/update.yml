@@ -16,7 +16,7 @@ jobs:
       # Configura Node.js com cache (mais rápido)
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: npm
 
       # Instala Expo + EAS CLI
