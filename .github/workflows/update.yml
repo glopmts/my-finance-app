@@ -22,12 +22,15 @@ jobs:
       # Instala Expo + EAS CLI
       - uses: expo/expo-github-action@v8
         with:
-          expo-version: latest # <--- adiciona essa linha
+          expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
       # Instala dependências
-      - run: npm install --frozen-lockfile
+      - run: npm ci
 
       # Publica a atualização OTA
       - run: eas update --channel preview --message "Preview update via GitHub Actions"
+        env:
+          EAS_BUILD_AUTOCOMMIT: "true"
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
