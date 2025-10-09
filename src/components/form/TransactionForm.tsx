@@ -1,6 +1,5 @@
 import { EvilIcons, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -15,14 +14,16 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import { useTransactionForm } from "../hooks/useTransactionForm";
-import { TransactionUpdateProps } from "../services/transactions.service";
+import { useTransactionForm } from "../../hooks/useTransactionForm";
 import {
   Transaction,
   TransactionPropsCreater,
   TransactionType,
-} from "../types/interfaces";
-import { createTransactionStyles } from "./styles/form-transactions";
+  TransactionUpdateProps,
+} from "../../types/transaction-props";
+import { createTransactionStyles } from "../styles/form-transactions";
+import CategorySelector from "./CategorySelector";
+import PaymentSourceSelector from "./PaymentSourceSelector";
 
 interface TransactionFormProps {
   userId: string;
@@ -58,7 +59,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     description,
     date,
     isRecurring,
-    categoryId,
     isLoading,
     errors,
     setType,
@@ -66,10 +66,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     setDescription,
     setDate,
     setIsRecurring,
-    setCategoryId,
     resetForm,
     handleSubmit,
     formatCurrency,
+    category,
+    paymentSource,
+    setCategory,
+    setPaymentSource,
+    validateForm,
   } = useTransactionForm({
     userId,
     transactionId,
@@ -87,7 +91,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       setDescription(transaction.description || "");
       setDate(new Date(transaction.date));
       setIsRecurring(transaction.isRecurring || false);
-      setCategoryId(transaction.categoryId || null);
     }
   }, [
     mode,
@@ -97,7 +100,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     setDescription,
     setDate,
     setIsRecurring,
-    setCategoryId,
   ]);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -149,7 +151,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const handleCancel = () => {
     if (mode === "create") {
-      const hasUnsavedData = amount || description || isRecurring || categoryId;
+      const hasUnsavedData = amount || description || isRecurring;
       if (hasUnsavedData) {
         Alert.alert(
           "Descartar alterações?",
@@ -223,6 +225,25 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* category select */}
+        <View>
+          <Text style={styles.title} className="mb-4">
+            Selecciona una categoría:
+          </Text>
+
+          <CategorySelector
+            onCategoryChange={setCategory}
+            selectedCategory={category}
+          />
+        </View>
+
+        {/* paymentSource types */}
+
+        <PaymentSourceSelector
+          onSourceChange={setPaymentSource}
+          selectedSource={paymentSource}
+        />
 
         {/* Amount Input */}
         <View style={styles.inputGroup}>
@@ -306,34 +327,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             />
           )}
         </View>
-
-        {/* Category Picker */}
-        {categories.length > 0 && (
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Categoria</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={categoryId}
-                onValueChange={(itemValue) => setCategoryId(itemValue)}
-                style={styles.picker}
-                itemStyle={
-                  deviceColorScheme === "dark"
-                    ? { color: "#fff" }
-                    : { color: "#000" }
-                }
-              >
-                <Picker.Item label="Selecione uma categoria" value={null} />
-                {categories.map((category) => (
-                  <Picker.Item
-                    key={category.id}
-                    label={category.name}
-                    value={category.id}
-                  />
-                ))}
-              </Picker>
-            </View>
-          </View>
-        )}
 
         {/* Recurring Switch */}
         <View style={styles.switchContainer}>

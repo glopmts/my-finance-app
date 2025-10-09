@@ -1,5 +1,5 @@
 import { showPlatformMessage } from "@/components/alerts/ToastMessage";
-import CreateTransactionForm from "@/components/TransactionForm";
+import CreateTransactionForm from "@/components/form/TransactionForm";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { API_BASE_URL } from "@/lib/api-from-url";
 import { useTransactionQuery } from "@/services/query/transactions.query";

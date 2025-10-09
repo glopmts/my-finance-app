@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import { Transaction } from "@/types/interfaces";
+import { Transaction } from "@/types/transaction-props";
 import { useQuery } from "@tanstack/react-query";
 
 // Interface para filtros opcionais

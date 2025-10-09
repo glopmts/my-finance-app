@@ -1,6 +1,6 @@
 import GetSalaryQuery from "@/services/query/salary.query";
 import GetTransactionsQuery from "@/services/query/transactions.query";
-import { TransactionProps } from "@/types/interfaces";
+import { Transaction } from "@/types/interfaces";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Alert from "../alerts/Alert-Infor";
@@ -16,7 +16,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
   const { mockTransaction, loader } = GetTransactionsQuery(userId);
   const router = useRouter();
 
-  function calculateTotalExpenses(transactions: TransactionProps[]) {
+  function calculateTotalExpenses(transactions: Transaction[]) {
     if (!Array.isArray(transactions)) return 0;
     return transactions.reduce(
       (sum, transaction) => sum + transaction.amount,
@@ -60,11 +60,12 @@ const InforCarSalary = ({ userId }: PropsUser) => {
     await refetch();
   };
 
-  const maxValue = salary[0]?.amount || 0;
+  const maxValueFilter = salary.map((c) => c.amount);
+  const maxValue = maxValueFilter[0];
+
   const totalExpenses = calculateTotalExpenses(mockTransaction);
   const progressValue = Math.min((totalExpenses / maxValue) * 100, 100);
   const isOverLimit = totalExpenses > maxValue;
-  const hasSalary = salary && salary.length > 0 && salary[0];
 
   return (
     <View>
@@ -77,7 +78,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
           className="dark:bg-zinc-800 bg-gray-300 shadow p-2 px-3 rounded-full"
         >
           <Text className="dark:text-zinc-300 font-semibold text-xl">
-            {hasSalary ? "Atualizar Salario" : "Add Salario"}
+            {salary ? "Atualizar Salario" : "Add Salario"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -90,6 +91,9 @@ const InforCarSalary = ({ userId }: PropsUser) => {
               salary={card}
               progressValue={progressValue}
               isOverLimit={isOverLimit}
+              transactions={mockTransaction}
+              isLoading={isLoading}
+              userId={userId}
             />
           ))}
         </View>

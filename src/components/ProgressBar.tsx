@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { useTransactionsQuery } from "../services/query/transactions.query";
-import { Transaction } from "../types/interfaces";
+import { Transaction } from "../types/transaction-props";
 
 type PropsProgress = {
   userId: string;
@@ -268,8 +268,8 @@ const ProgressBar: React.FC<{
                 ? "#dc2626"
                 : "#ef4444"
               : isDark
-              ? "#059669"
-              : "#10b981",
+                ? "#059669"
+                : "#10b981",
           },
         ]}
       />
@@ -449,8 +449,8 @@ const ProgressSpending: React.FC<PropsProgress> = ({
                       ? "#f87171"
                       : "#dc2626"
                     : isDark
-                    ? "#34d399"
-                    : "#059669",
+                      ? "#34d399"
+                      : "#059669",
                 },
               ]}
             >

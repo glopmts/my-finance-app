@@ -1,5 +1,5 @@
 import { formatCurrency, formatDate } from "@/lib/formatDts";
-import type { TransactionProps } from "@/types/interfaces";
+import type { TransactionProps } from "@/types/transaction-props";
 import { AntDesign, Entypo, Feather } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";

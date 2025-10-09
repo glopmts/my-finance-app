@@ -65,7 +65,16 @@ const SalaryPage = () => {
           userId={user?.id as string}
           onSubmit={handleSalaryUpdate}
           salary={salary[0]}
-          onCancel={() => router.back()}
+          onCancel={() =>
+            router.push({
+              pathname: "/(main)/(home)",
+            })
+          }
+          onBack={() =>
+            router.push({
+              pathname: "/(main)/(home)",
+            })
+          }
         />
       ) : (
         <FormAutouSalaryUser

@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { API_BASE_URL } from "../lib/api-from-url";
-import { Transaction } from "../types/interfaces";
+import { Transaction } from "../types/transaction-props";
 
 interface UploadResult {
   message: string;
