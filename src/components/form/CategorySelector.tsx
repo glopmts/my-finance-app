@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
   CATEGORY_TRANSLATIONS,
@@ -53,23 +53,6 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
           </Text>
         </TouchableOpacity>
       ))}
-    </View>
-  );
-};
-
-// Uso del componente
-const MyScreen: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<CategoryEnum | null>(
-    null
-  );
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Selecciona una categoría:</Text>
-      <CategorySelector
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-      />
     </View>
   );
 };

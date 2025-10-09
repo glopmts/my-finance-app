@@ -28,10 +28,14 @@ export default function MainLayout() {
         tabBarStyle: {
           backgroundColor: isDark ? "#27272a" : "#ffff",
           borderTopWidth: 0,
-          height: 60,
+          height: 70,
         },
         tabBarActiveTintColor: isDark ? "#3b82f6" : "#3b82f6",
         tabBarInactiveTintColor: "#888",
+        tabBarActiveBackgroundColor: isDark ? "#3f3f46" : "#d4d4d8",
+        tabBarBadgeStyle: {
+          borderRadius: 16,
+        },
         animation: "none",
       }}
     >
