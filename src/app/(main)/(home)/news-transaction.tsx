@@ -3,7 +3,7 @@ import CreateTransactionForm from "@/components/form/TransactionForm";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { API_BASE_URL } from "@/lib/api-from-url";
 import { useTransactionQuery } from "@/services/query/transactions.query";
-import { TransactionPropsCreater } from "@/types/interfaces";
+import { TransactionPropsCreater } from "@/types/transaction-props";
 import { useRouter } from "expo-router";
 import { Alert, Platform, ToastAndroid, View } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";

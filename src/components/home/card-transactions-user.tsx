@@ -1,5 +1,5 @@
 import { useTransactionsQuery } from "@/services/query/transactions.query";
-import { TransactionProps } from "@/types/interfaces";
+import { TransactionProps } from "@/types/transaction-props";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { endOfMonth, isWithinInterval, parseISO, startOfMonth } from "date-fns";
 import { router } from "expo-router";
