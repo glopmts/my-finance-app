@@ -1,15 +1,13 @@
 import EmptyState from "@/components/alerts/EmptyState";
 import { showPlatformMessage } from "@/components/alerts/ToastMessage";
+import TransactionForm from "@/components/form/TransactionForm";
 import { InlineLoading } from "@/components/Loading";
-import TransactionForm from "@/components/TransactionForm";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { useTransactionQuery } from "@/services/query/transactions.query";
-import {
-  TransactionService,
-  TransactionUpdateProps,
-} from "@/services/transactions.service";
+import { TransactionService } from "@/services/transactions.service";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, View } from "react-native";
+import { TransactionUpdateProps } from "../../../types/transaction-props";
 
 const EditerTransaction = () => {
   const { id } = useLocalSearchParams();

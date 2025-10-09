@@ -1,12 +1,14 @@
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert } from "react-native";
-import { TransactionUpdateProps } from "../services/transactions.service";
 import {
+  CategoryEnum,
+  PaymentSource,
   Transaction,
   TransactionPropsCreater,
   TransactionType,
-} from "../types/interfaces";
+  TransactionUpdateProps,
+} from "../types/transaction-props";
 
 interface UseTransactionFormProps {
   userId: string;
@@ -20,19 +22,21 @@ interface UseTransactionFormProps {
 
 interface UseTransactionFormReturn {
   type: TransactionType;
+  category: CategoryEnum;
+  paymentSource: PaymentSource;
   amount: string;
   description: string;
   date: Date;
   isRecurring: boolean;
-  categoryId: string | null;
   isLoading: boolean;
   errors: Record<string, string>;
   setType: (type: TransactionType) => void;
+  setCategory: (category: CategoryEnum) => void;
+  setPaymentSource: (paymentSource: PaymentSource) => void;
   setAmount: (amount: string) => void;
   setDescription: (description: string) => void;
   setDate: (date: Date) => void;
   setIsRecurring: (isRecurring: boolean) => void;
-  setCategoryId: (categoryId: string | null) => void;
   validateForm: () => boolean;
   resetForm: () => void;
   handleSubmit: () => Promise<void>;
@@ -51,6 +55,12 @@ export const useTransactionForm = ({
   const [type, setType] = useState<TransactionType>(
     transaction?.type || "EXPENSE"
   );
+  const [category, setCategory] = useState<CategoryEnum>(
+    transaction?.category || "TRANSPORTATION"
+  );
+  const [paymentSource, setPaymentSource] = useState<PaymentSource>(
+    transaction?.paymentSource || "SALARY"
+  );
   const [amount, setAmount] = useState(transaction?.amount.toString() || "");
   const [description, setDescription] = useState(
     transaction?.description || ""
@@ -61,9 +71,7 @@ export const useTransactionForm = ({
   const [isRecurring, setIsRecurring] = useState(
     transaction?.isRecurring || false
   );
-  const [categoryId, setCategoryId] = useState<string | null>(
-    transaction?.categoryId || null
-  );
+
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -89,10 +97,11 @@ export const useTransactionForm = ({
   const resetForm = useCallback(() => {
     setType("EXPENSE");
     setAmount("");
+    setCategory("TRANSPORTATION");
+    setPaymentSource("SALARY");
     setDescription("");
     setDate(new Date());
     setIsRecurring(false);
-    setCategoryId(null);
     setErrors({});
   }, []);
 
@@ -134,6 +143,8 @@ export const useTransactionForm = ({
           isRecurring,
           type,
           description: normalizedDescription,
+          category,
+          paymentSource,
           recurringId: isRecurring ? `recurring_${Date.now()}` : null,
         };
         await onUpdate(transactionDataUpdate);
@@ -148,6 +159,8 @@ export const useTransactionForm = ({
           description: normalizedDescription,
           date: date.toISOString(),
           isRecurring,
+          category,
+          paymentSource,
           recurringId: isRecurring ? `recurring_${Date.now()}` : null,
         };
         await onSubmit?.(transactionData);
@@ -181,6 +194,8 @@ export const useTransactionForm = ({
     date,
     isRecurring,
     type,
+    category,
+    paymentSource,
     refetch,
     onSubmit,
     resetForm,
@@ -192,15 +207,17 @@ export const useTransactionForm = ({
     description,
     date,
     isRecurring,
-    categoryId,
     isLoading,
     errors,
+    category,
+    paymentSource,
+    setPaymentSource,
     setType,
+    setCategory,
     setAmount,
     setDescription,
     setDate,
     setIsRecurring,
-    setCategoryId,
     validateForm,
     resetForm,
     handleSubmit,

@@ -1,26 +1,15 @@
 import { api } from "../lib/axios";
+import { ApiResponse } from "../types/interfaces";
 import {
-  ApiResponse,
   TransactionPropsCreater,
   TransactionType,
-} from "../types/interfaces";
+  TransactionUpdateProps,
+} from "../types/transaction-props";
 
 export interface Transaction extends TransactionPropsCreater {
   id: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface TransactionUpdateProps {
-  id: string;
-  userId: string;
-  description?: string | null;
-  type?: TransactionType;
-  amount?: number;
-  date?: string;
-  isRecurring?: boolean;
-  recurringId?: string | null;
-  categoryId?: string | null;
 }
 
 export interface TransactionFilters {

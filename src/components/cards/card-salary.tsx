@@ -8,11 +8,15 @@ import React from "react";
 import { Text, useColorScheme, View } from "react-native";
 import { formatCurrency, formatDate } from "../../lib/formatDts";
 import { Salary } from "../../types/interfaces";
+import { Transaction } from "../../types/transaction-props";
 
 interface SalaryCardProps {
   salary: Salary;
   progressValue?: number;
   isOverLimit?: boolean;
+  transactions?: Transaction[];
+  isLoading?: boolean;
+  userId: string;
 }
 
 export const getFrequencyLabel = (frequency: string) => {
@@ -29,6 +33,9 @@ const SalaryCard = ({
   salary,
   progressValue = 0,
   isOverLimit = false,
+  isLoading,
+  transactions,
+  userId,
 }: SalaryCardProps) => {
   const deviceColorScheme = useColorScheme();
 
@@ -79,34 +86,13 @@ const SalaryCard = ({
         </View>
 
         {/* Progress Section - Replaced ProgressBarAndroid with custom progress bar */}
-        <View className="mb-6 space-y-3">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-medium mb-2 text-zinc-900 dark:text-white">
-              Progresso de Gastos
-            </Text>
-            <Text
-              className={`text-sm font-semibold ${
-                isOverLimit
-                  ? "text-red-600 dark:text-red-400"
-                  : "text-green-600 dark:text-green-400"
-              }`}
-            >
-              {progressValue.toFixed(2)}%
-            </Text>
-          </View>
-
-          {/* Custom progress bar implementation */}
-          <View className="w-full h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-            <View
-              className={`h-full ${
-                isOverLimit
-                  ? "bg-red-500 dark:bg-red-400"
-                  : "bg-green-500 dark:bg-green-400"
-              }`}
-              style={{ width: `${progressValue}%` }}
-            />
-          </View>
-        </View>
+        {/* <View className="mb-6 space-y-3">
+          <ProgressSpending
+            maxValue={salary.amount}
+            key={salary.id}
+            userId={userId}
+          />
+        </View> */}
 
         {/* Footer Section */}
         <View className="flex-row items-baseline justify-between pt-4 border-t border-zinc-100 dark:border-zinc-900">
