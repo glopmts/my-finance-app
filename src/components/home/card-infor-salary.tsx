@@ -1,6 +1,6 @@
 import GetSalaryQuery from "@/services/query/salary.query";
 import GetTransactionsQuery from "@/services/query/transactions.query";
-import { Transaction } from "@/types/interfaces";
+import { Transaction } from "@/types/transaction-props";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Alert from "../alerts/Alert-Infor";

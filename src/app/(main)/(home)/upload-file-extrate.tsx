@@ -3,7 +3,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { API_BASE_URL } from "@/lib/api-from-url";
 import { useTransactionsQuery } from "@/services/query/transactions.query";
-import { Transaction } from "@/types/interfaces";
+import { Transaction } from "@/types/transaction-props";
 import { Ionicons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import React, { useState } from "react";
