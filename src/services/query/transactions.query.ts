@@ -2,7 +2,6 @@ import { api } from "@/lib/axios";
 import { Transaction } from "@/types/transaction-props";
 import { useQuery } from "@tanstack/react-query";
 
-// Interface para filtros opcionais
 export interface TransactionFilters {
   startDate?: string;
   endDate?: string;
@@ -113,9 +112,9 @@ export function use5TransactionsQuery(userId: string) {
 
       return response.data.data;
     },
-    refetchInterval: 120000, // 2 minutos
+    refetchInterval: 120000,
     refetchOnWindowFocus: true,
-    staleTime: 1000 * 60 * 20, // 20 minutos
+    staleTime: 1000 * 60 * 20,
     enabled: !!userId,
   });
 
@@ -127,7 +126,6 @@ export function use5TransactionsQuery(userId: string) {
   };
 }
 
-// Hook para buscar resumo/estatísticas das transações
 export function useTransactionsSummaryQuery(
   userId: string,
   period?: { startDate?: string; endDate?: string }

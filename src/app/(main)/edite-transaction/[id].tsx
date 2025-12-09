@@ -1,6 +1,6 @@
 import EmptyState from "@/components/alerts/EmptyState";
 import { showPlatformMessage } from "@/components/alerts/ToastMessage";
-import TransactionForm from "@/components/form/TransactionForm";
+import TransactionForm from "@/components/form/transaction-form";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { useTransactionQuery } from "@/services/query/transactions.query";

@@ -41,6 +41,19 @@ export type CategoryEnum =
   | "SHOPPING"
   | "OTHER";
 
+export enum CategoryEnumProps {
+  TRANSPORTATION = "TRANSPORTATION",
+  FOOD = "FOOD",
+  ACCOMMODATION = "ACCOMMODATION",
+  ENTERTAINMENT = "ENTERTAINMENT",
+  HEALTHCARE = "HEALTHCARE",
+  EDUCATION = "EDUCATION",
+  UTILITIES = "UTILITIES",
+  INVESTMENTS = "INVESTMENTS",
+  SHOPPING = "SHOPPING",
+  OTHER = "OTHER",
+}
+
 export type PaymentSource =
   | "SALARY"
   | "CREDIT_CARD"
@@ -56,32 +69,6 @@ export const PAYMENTSOURCE_TRANSLATIONS = {
   SALARY: "Salario",
   CREDIT_CARD: "Cartão credito",
   CASH: "Dinheiro",
-} as const;
-
-export const CATEGORY_ICONS: Record<CategoryEnum, string> = {
-  TRANSPORTATION: "🚗",
-  FOOD: "🍕",
-  ACCOMMODATION: "🏨",
-  ENTERTAINMENT: "🎬",
-  HEALTHCARE: "🏥",
-  EDUCATION: "📚",
-  UTILITIES: "💡",
-  INVESTMENTS: "📈",
-  SHOPPING: "🛍️",
-  OTHER: "📦",
-};
-
-export const CATEGORY_TRANSLATIONS = {
-  TRANSPORTATION: "Transporte",
-  FOOD: "Alimentação",
-  ACCOMMODATION: "Hospedagem",
-  ENTERTAINMENT: "Entretenimento",
-  HEALTHCARE: "Saúde",
-  EDUCATION: "Educação",
-  UTILITIES: "Utilidades",
-  INVESTMENTS: "Investimentos",
-  SHOPPING: "Compras",
-  OTHER: "Outro",
 } as const;
 
 export interface Transaction {

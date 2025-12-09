@@ -1,11 +1,12 @@
 import { use5TransactionsQuery } from "@/services/query/transactions.query";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
+import { filterTransactionsByMonth } from "../../utils/dateUtils";
 import Alert from "../alerts/Alert-Infor";
 import CardTransaction from "../cards/card-transactions";
-import ListWrapper from "../ListWrapper";
+import ListWrapper from "../list-wrapper";
 
 type PropsUser = {
   userId: string;
@@ -22,6 +23,26 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
   } = use5TransactionsQuery(userId);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const filteredTransactions = recurringTransactions
+    ? filterTransactionsByMonth(recurringTransactions, selectedDate)
+    : [];
+
+  useEffect(() => {
+    const checkMonthChange = () => {
+      const now = new Date();
+      if (
+        now.getMonth() !== selectedDate.getMonth() ||
+        now.getFullYear() !== selectedDate.getFullYear()
+      ) {
+        setSelectedDate(now);
+      }
+    };
+
+    const interval = setInterval(checkMonthChange, 3600000);
+    return () => clearInterval(interval);
+  }, [selectedDate]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -80,7 +101,7 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
         />
       </View>
       <ListWrapper
-        data={recurringTransactions}
+        data={filteredTransactions}
         loading={refreshing}
         onRefresh={handleRefresh}
         emptyTitle="Nenhuma transação encontrada"

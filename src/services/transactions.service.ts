@@ -1,35 +1,14 @@
 import { api } from "../lib/axios";
-import { ApiResponse } from "../types/interfaces";
+import {
+  ApiResponse,
+  Transaction,
+  TransactionFilters,
+  TransactionResponse,
+} from "../types/interfaces";
 import {
   TransactionPropsCreater,
-  TransactionType,
   TransactionUpdateProps,
 } from "../types/transaction-props";
-
-export interface Transaction extends TransactionPropsCreater {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TransactionFilters {
-  userId?: string;
-  type?: TransactionType;
-  categoryId?: string;
-  startDate?: string;
-  endDate?: string;
-  isRecurring?: boolean;
-  page?: number;
-  limit?: number;
-}
-
-export interface TransactionResponse {
-  data: Transaction[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
 
 // Classe de Serviço
 export class TransactionService {

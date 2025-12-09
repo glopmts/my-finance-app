@@ -70,7 +70,8 @@
       "router": {},
       "eas": {
         "projectId": "248282b1-7289-4555-823c-d4dbd7c49046"
-      }
+      },
+      "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "${EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}"
     }
   }
 }

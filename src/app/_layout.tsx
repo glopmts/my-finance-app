@@ -14,7 +14,9 @@ import "./global.css";
 
 SplashScreen.preventAutoHideAsync();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
+const publishableKey =
+  process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  "pk_test_bGFzdGluZy1wYXJha2VldC0xNi5jbGVyay5hY2NvdW50cy5kZXYk";
 
 function RootLayoutNav() {
   const [isAppReady, setAppReady] = useState(false);

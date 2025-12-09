@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import InforCarSalary from "@/components/home/card-infor-salary";
+import CategoryTransactions from "@/components/home/category-user";
 import LastestTransactionsPage from "@/components/home/lastest-user-transactions";
 import { InlineLoading } from "@/components/Loading";
 import { OTAUpdateManager } from "@/components/updates/OTAUpdateManager";
@@ -34,7 +35,7 @@ const HomePage = () => {
       router.reload();
     }
     setPrevUserId(userId!);
-  }, [userId]);
+  }, [prevUserId, router, userId]);
 
   if (loading) {
     return <InlineLoading message="Carregando..." size="large" />;
@@ -71,6 +72,11 @@ const HomePage = () => {
             <View className="px-4">
               {/* salary */}
               <InforCarSalary userId={user?.id as string} />
+
+              {/* Category transactions */}
+              <View className="mt-6">
+                <CategoryTransactions userId={user?.id as string} />
+              </View>
               {/* transactions */}
               <View className="mt-6">
                 <LastestTransactionsPage userId={user?.id as string} />

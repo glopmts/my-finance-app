@@ -1,4 +1,4 @@
-import FormAutouSalaryUser from "@/components/FormAutoSalary";
+import FormAutouSalaryUser from "@/components/form-auto-salary";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import GetSalaryQuery from "@/services/query/salary.query";

@@ -22,8 +22,8 @@ import {
   TransactionUpdateProps,
 } from "../../types/transaction-props";
 import { createTransactionStyles } from "../styles/form-transactions";
-import CategorySelector from "./CategorySelector";
-import PaymentSourceSelector from "./PaymentSourceSelector";
+import CategorySelector from "./categorys-selector";
+import PaymentSourceSelector from "./payment-source-selector";
 
 interface TransactionFormProps {
   userId: string;

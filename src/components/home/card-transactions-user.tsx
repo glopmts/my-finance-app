@@ -1,25 +1,18 @@
-import { useTransactionsQuery } from "@/services/query/transactions.query";
-import { TransactionProps } from "@/types/transaction-props";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { endOfMonth, isWithinInterval, parseISO, startOfMonth } from "date-fns";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert as AlertReact,
-  Platform,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
-import { TransactionService } from "../../services/transactions.service";
-import Alert from "../alerts/Alert-Infor";
-import { showPlatformMessage } from "../alerts/ToastMessage";
-import CardTransaction from "../cards/card-transactions";
-import DateSelector from "../DateSelectorProps";
-import ListWrapper from "../ListWrapper";
+
+import Alert from "@/components/alerts/Alert-Infor";
+import CardTransaction from "@/components/cards/card-transactions";
+import DateSelector from "@/components/date-selector";
+import ListWrapper from "@/components/list-wrapper";
+import { useTransactionsPage } from "@/hooks/useTransactionsPage";
 
 type PropsUser = {
   userId: string;
@@ -27,150 +20,31 @@ type PropsUser = {
 
 const TransactionsPage = ({ userId }: PropsUser) => {
   const deviceColorScheme = useColorScheme();
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedTransactions, setSelectedTransactions] = useState<string[]>(
-    []
-  );
-  const [isSelecting10, setIsSelecting10] = useState(false);
-  const [isDeleteing, setIsDeleting] = useState(false);
 
   const {
+    selectedDate,
+    selectedTransactions,
+    isSelecting10,
+    isDeleting,
+    refreshing,
     transactions,
     isLoadingTransactions,
     transactionsError,
-    refetchTransactions,
-  } = useTransactionsQuery(userId);
+    filteredTransactions,
+    paginatedTransactions,
+    setSelectedDate,
+    handleRefresh,
+    handleEdit,
+    handleDelete,
+    handleSelect10Transactions,
+    handleDeleteSelected,
+    handleSelectTransaction,
+  } = useTransactionsPage({
+    userId,
+    initialDate: new Date(),
+  });
 
-  const [refreshing, setRefreshing] = useState(false);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await refetchTransactions();
-    setRefreshing(false);
-  };
-
-  const handleEdit = (transaction: TransactionProps) => {
-    // Implementar edição
-  };
-
-  const handleDelete = (id: string) => {
-    // Implementar exclusão
-  };
-
-  function filterTransactionsByMonth(
-    transactions: TransactionProps[],
-    date: string
-  ): TransactionProps[];
-
-  function filterTransactionsByMonth(
-    transactions: TransactionProps[],
-    date: Date
-  ): TransactionProps[];
-
-  function filterTransactionsByMonth(
-    transactions: TransactionProps[],
-    date: Date | string
-  ): TransactionProps[] {
-    const dateObj = typeof date === "string" ? parseISO(date) : date;
-
-    const start = startOfMonth(dateObj);
-    const end = endOfMonth(dateObj);
-
-    return transactions.filter((transaction) => {
-      const transactionDate = parseISO(transaction.date);
-      return isWithinInterval(transactionDate, { start, end });
-    });
-  }
-
-  const filteredTransactions = transactions
-    ? filterTransactionsByMonth(transactions, selectedDate)
-    : [];
-
-  const paginatedTransactions = filteredTransactions.slice(0);
-
-  useEffect(() => {
-    const checkMonthChange = () => {
-      const now = new Date();
-      if (
-        now.getMonth() !== selectedDate.getMonth() ||
-        now.getFullYear() !== selectedDate.getFullYear()
-      ) {
-        setSelectedDate(now);
-      }
-    };
-
-    const interval = setInterval(checkMonthChange, 3600000);
-    return () => clearInterval(interval);
-  }, [selectedDate]);
-
-  const handleSelect10Transactions = () => {
-    if (isSelecting10) {
-      setSelectedTransactions([]);
-      setIsSelecting10(false);
-    } else {
-      const first10Ids = paginatedTransactions
-        .slice(0, 10)
-        .map((transaction) => transaction.id);
-
-      setSelectedTransactions(first10Ids);
-      setIsSelecting10(true);
-    }
-  };
-
-  const handleDeleteSelected = () => {
-    if (selectedTransactions.length > 0) {
-      handleDeleteMultiple(selectedTransactions);
-    }
-  };
-
-  const handleDeleteMultiple = async (selectedIds: string[]) => {
-    setIsDeleting(true);
-    try {
-      await TransactionService.deleteMultiple(selectedIds);
-
-      if (selectedIds.length === 1) {
-        showPlatformMessage("Transação deletada com sucesso!");
-      } else {
-        showPlatformMessage("Transações deletadas com sucesso!");
-      }
-
-      await refetchTransactions();
-      setSelectedTransactions([]);
-      setIsSelecting10(false);
-      setIsDeleting(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        if (Platform.OS === "android") {
-          ToastAndroid.show(
-            `Erro ao deletar transações: ${error.message}`,
-            ToastAndroid.SHORT
-          );
-        } else {
-          AlertReact.alert(`Erro ao deletar transações: ${error.message}`);
-        }
-      } else {
-        if (Platform.OS === "android") {
-          ToastAndroid.show(
-            "Erro desconhecido ao deletar transações",
-            ToastAndroid.SHORT
-          );
-        } else {
-          AlertReact.alert("Erro desconhecido ao deletar transações");
-        }
-      }
-      setIsDeleting(false);
-    }
-  };
-
-  const handleSelectTransaction = (id: string) => {
-    setSelectedTransactions((prev) =>
-      prev.includes(id)
-        ? prev.filter((transactionId) => transactionId !== id)
-        : [...prev, id]
-    );
-    setIsSelecting10(false);
-  };
-
+  // Loading state
   if (isLoadingTransactions) {
     return (
       <View className="w-full h-full flex-1 mt-8 items-center justify-center dark:bg-zinc-900">
@@ -182,7 +56,8 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     );
   }
 
-  if (!transactions) {
+  // Empty state
+  if (!transactions || transactions.length === 0) {
     return (
       <Alert
         type="warning"
@@ -194,12 +69,13 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     );
   }
 
+  // Error state
   if (transactionsError) {
     return (
       <Alert
         type="warning"
-        title="Error ao buscar transações"
-        message="Houve um error ao buscar transações. Tente novamente!"
+        title="Erro ao buscar transações"
+        message="Houve um erro ao buscar transações. Tente novamente!"
         actionText="Cadastrar Salário"
         onActionPress={() => console.log("Cadastrar salário")}
       />
@@ -224,21 +100,27 @@ const TransactionsPage = ({ userId }: PropsUser) => {
           size={25}
         />
       </View>
+
       <DateSelector
         selectedDate={selectedDate}
         onDateChange={setSelectedDate}
       />
+
       <View className="flex-row justify-between w- mb-2">
         <View className="pb-4 flex-row gap-2.5 w-full">
           <TouchableOpacity
             onPress={handleSelect10Transactions}
-            className={`p-2 rounded-full dark:bg-zinc-800 bg-gray-300${
+            className={`p-2 rounded-full ${
               isSelecting10
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-transparent"
+                ? "bg-blue-600 dark:bg-blue-700"
+                : "bg-gray-300 dark:bg-zinc-800"
             }`}
           >
-            <Text className="text-sm font-semibold dark:text-white">
+            <Text
+              className={`text-sm font-semibold ${
+                isSelecting10 ? "text-white" : "text-black dark:text-white"
+              }`}
+            >
               {isSelecting10
                 ? "Desmarcar 10 Transações"
                 : "Selecionar 10 Transações"}
@@ -248,23 +130,24 @@ const TransactionsPage = ({ userId }: PropsUser) => {
           {selectedTransactions.length > 0 && (
             <TouchableOpacity
               onPress={handleDeleteSelected}
-              disabled={isDeleteing}
-              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full"
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full flex-row items-center gap-1"
             >
-              {isDeleteing ? (
+              {isDeleting ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <View className="flex items-center gap-2">
-                  <Text className="text-sm font-semibold text-white text-center gap-3 flex-row">
-                    <Ionicons name="trash" size={16} color="white" />
+                <>
+                  <Ionicons name="trash" size={16} color="white" />
+                  <Text className="text-sm font-semibold text-white">
                     Excluir {selectedTransactions.length} selecionadas
                   </Text>
-                </View>
+                </>
               )}
             </TouchableOpacity>
           )}
         </View>
       </View>
+
       <ListWrapper
         data={filteredTransactions}
         loading={refreshing}
@@ -276,21 +159,15 @@ const TransactionsPage = ({ userId }: PropsUser) => {
           router.push("/(main)/(home)/news-transaction")
         }
         keyExtractor={(item) => item.id}
-        renderItem={(item, index) => (
+        renderItem={(item) => (
           <CardTransaction
             transaction={item}
             userId={userId}
-            refetch={refetchTransactions}
+            refetch={handleRefresh}
             handleDelete={handleDelete}
             handleEdite={handleEdit}
             isSelected={selectedTransactions.includes(item.id)}
-            onSelect={() => {
-              if (selectedTransactions.includes(item.id)) {
-                handleSelectTransaction(item.id);
-              } else {
-                handleSelectTransaction(item.id);
-              }
-            }}
+            onSelect={() => handleSelectTransaction(item.id)}
           />
         )}
       />
