@@ -1,6 +1,7 @@
 import { useTransactionsQuery } from "@/services/query/transactions.query";
 import { CATEGORY_CONFIG } from "@/types/category_config";
 import { CategoryEnum } from "@/types/transaction-props";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
 import {
   StyleSheet,
@@ -21,6 +22,175 @@ interface CategorySummary {
   originalCategory: CategoryEnum;
 }
 
+const getStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    card: {
+      overflow: "hidden",
+      borderWidth: 1,
+      backgroundColor: isDark ? "#09090b" : "#ffffff",
+      borderRadius: 12,
+      borderColor: isDark ? "#27272a" : "#e4e4e7",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
+      padding: 16,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: isDark ? "#ffff" : "#27272a",
+    },
+    subtitle: {
+      fontSize: 14,
+      color: isDark ? "#fffc" : "#27272a",
+      marginTop: 4,
+    },
+    errorText: {
+      fontSize: 14,
+      color: "#ef4444",
+      marginTop: 4,
+    },
+    headerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    monthSelector: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    monthButton: {
+      padding: 8,
+      borderRadius: 8,
+      backgroundColor: isDark ? "#18181b" : "#f9fafb",
+      borderWidth: 1,
+      borderColor: isDark ? "#52525b" : "#18181b",
+    },
+    monthText: {
+      fontSize: 14,
+      fontWeight: "500",
+      minWidth: 120,
+      textAlign: "center",
+    },
+    statsGrid: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 16,
+      gap: 16,
+    },
+    statItem: {
+      flex: 1,
+      alignItems: "center",
+    },
+    incomeText: {
+      color: "#16a34a",
+      fontWeight: "600",
+      fontSize: 14,
+    },
+    expenseText: {
+      color: "#dc2626",
+      fontWeight: "600",
+      fontSize: 14,
+    },
+    balanceText: {
+      fontWeight: "600",
+      fontSize: 14,
+    },
+    positiveBalance: {
+      color: "#16a34a",
+    },
+    negativeBalance: {
+      color: "#dc2626",
+    },
+    statLabel: {
+      color: "#71717a",
+      fontSize: 12,
+      marginTop: 2,
+    },
+    categoriesContainer: {
+      marginTop: 16,
+    },
+    emptyText: {
+      textAlign: "center",
+      paddingVertical: 32,
+      color: "#71717a",
+    },
+    categoriesList: {
+      gap: 16,
+    },
+    categoryItem: {
+      gap: 8,
+    },
+    categoryRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    categoryLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    categoryName: {
+      fontWeight: "500",
+      fontSize: 14,
+      color: isDark ? "#ffff" : "#27272a",
+    },
+    categoryPercentage: {
+      fontSize: 12,
+      color: isDark ? "#fffc" : "#27272a",
+    },
+    categoryAmount: {
+      fontWeight: "600",
+      color: isDark ? "#fffc" : "#27272a",
+    },
+    skeletonContainer: {
+      gap: 16,
+      marginTop: 16,
+    },
+    skeletonItem: {
+      gap: 8,
+    },
+    skeletonRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    skeletonRowLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    skeletonIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 8,
+      backgroundColor: "#e4e4e7",
+    },
+    skeletonTextLarge: {
+      height: 16,
+      width: 80,
+      backgroundColor: "#e4e4e7",
+      borderRadius: 4,
+    },
+    skeletonTextSmall: {
+      height: 12,
+      width: 64,
+      backgroundColor: "#e4e4e7",
+      borderRadius: 4,
+      marginTop: 4,
+    },
+    skeletonAmount: {
+      height: 16,
+      width: 48,
+      backgroundColor: "#e4e4e7",
+      borderRadius: 4,
+    },
+  });
+
 const CategoryTransactions = ({ userId }: { userId: string }) => {
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const {
@@ -28,7 +198,10 @@ const CategoryTransactions = ({ userId }: { userId: string }) => {
     transactions: allTransactions,
     transactionsError,
   } = useTransactionsQuery(userId);
-  const deviceColorScheme = useColorScheme();
+
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const styles = getStyles(isDark);
 
   const getTransactionsByMonth = useMemo(() => {
     if (!allTransactions) return [];
@@ -174,19 +347,12 @@ const CategoryTransactions = ({ userId }: { userId: string }) => {
   }
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: deviceColorScheme === "dark" ? "#fff" : "#27272a",
-        },
-      ]}
-    >
+    <View style={[styles.card]}>
       <View>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.title}>Gastos por Categoria</Text>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.title]}>Gastos por Categoria</Text>
+            <Text style={[styles.subtitle]}>
               {monthName} - Total: R$ {monthlyStats.totalExpenses.toFixed(2)}
             </Text>
           </View>
@@ -195,14 +361,21 @@ const CategoryTransactions = ({ userId }: { userId: string }) => {
               onPress={() => changeMonth("prev")}
               style={styles.monthButton}
             >
-              <Text>←</Text>
+              <MaterialIcons
+                name="chevron-left"
+                size={20}
+                color={isDark ? "#9ca3af" : "#6b7280"}
+              />
             </TouchableOpacity>
-            <Text style={styles.monthText}>{monthName}</Text>
             <TouchableOpacity
               onPress={() => changeMonth("next")}
               style={styles.monthButton}
             >
-              <Text>→</Text>
+              <MaterialIcons
+                name="chevron-right"
+                size={20}
+                color={isDark ? "#9ca3af" : "#6b7280"}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -257,13 +430,15 @@ const CategoryTransactions = ({ userId }: { userId: string }) => {
                         size={40}
                       />
                       <View>
-                        <Text style={styles.categoryName}>{category.name}</Text>
-                        <Text style={styles.categoryPercentage}>
+                        <Text style={[styles.categoryName]}>
+                          {category.name}
+                        </Text>
+                        <Text style={[styles.categoryPercentage]}>
                           {category.percentage}% do total
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.categoryAmount}>
+                    <Text style={[styles.categoryAmount]}>
                       R$ {category.amount.toFixed(2)}
                     </Text>
                   </View>
@@ -277,170 +452,5 @@ const CategoryTransactions = ({ userId }: { userId: string }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#e4e4e7",
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#18181b",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#71717a",
-    marginTop: 4,
-  },
-  errorText: {
-    fontSize: 14,
-    color: "#ef4444",
-    marginTop: 4,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  monthSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  monthButton: {
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: "#f4f4f5",
-  },
-  monthText: {
-    fontSize: 14,
-    fontWeight: "500",
-    minWidth: 120,
-    textAlign: "center",
-  },
-  statsGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
-    gap: 16,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  incomeText: {
-    color: "#16a34a",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  expenseText: {
-    color: "#dc2626",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  balanceText: {
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  positiveBalance: {
-    color: "#16a34a",
-  },
-  negativeBalance: {
-    color: "#dc2626",
-  },
-  statLabel: {
-    color: "#71717a",
-    fontSize: 12,
-    marginTop: 2,
-  },
-  categoriesContainer: {
-    marginTop: 16,
-  },
-  emptyText: {
-    textAlign: "center",
-    paddingVertical: 32,
-    color: "#71717a",
-  },
-  categoriesList: {
-    gap: 16,
-  },
-  categoryItem: {
-    gap: 8,
-  },
-  categoryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  categoryLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  categoryName: {
-    fontWeight: "500",
-    fontSize: 14,
-    color: "#18181b",
-  },
-  categoryPercentage: {
-    fontSize: 12,
-    color: "#71717a",
-  },
-  categoryAmount: {
-    fontWeight: "600",
-    color: "#18181b",
-  },
-  skeletonContainer: {
-    gap: 16,
-    marginTop: 16,
-  },
-  skeletonItem: {
-    gap: 8,
-  },
-  skeletonRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  skeletonRowLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  skeletonIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: "#e4e4e7",
-  },
-  skeletonTextLarge: {
-    height: 16,
-    width: 80,
-    backgroundColor: "#e4e4e7",
-    borderRadius: 4,
-  },
-  skeletonTextSmall: {
-    height: 12,
-    width: 64,
-    backgroundColor: "#e4e4e7",
-    borderRadius: 4,
-    marginTop: 4,
-  },
-  skeletonAmount: {
-    height: 16,
-    width: 48,
-    backgroundColor: "#e4e4e7",
-    borderRadius: 4,
-  },
-});
 
 export default CategoryTransactions;

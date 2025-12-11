@@ -77,6 +77,7 @@ const HomePage = () => {
               <View className="mt-6">
                 <CategoryTransactions userId={user?.id as string} />
               </View>
+
               {/* transactions */}
               <View className="mt-6">
                 <LastestTransactionsPage userId={user?.id as string} />

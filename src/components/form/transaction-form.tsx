@@ -73,7 +73,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     paymentSource,
     setCategory,
     setPaymentSource,
-    validateForm,
   } = useTransactionForm({
     userId,
     transactionId,
@@ -187,11 +186,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       >
         <View style={styles.header}>
           <Text style={styles.title}>{getTitle()}</Text>
-          {onCancel && (
+          {/* {onCancel && (
             <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={getIconColor()} />
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
 
         {/* Transaction Type Selector */}

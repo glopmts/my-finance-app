@@ -71,7 +71,6 @@ export const CATEGORY_CONFIG: Record<CategoryEnum, CategoryConfig> = {
   },
 };
 
-// Se você ainda precisa do mapeamento para os valores em português do tipo Category
 export const CATEGORY_TO_KEY: Record<CategoryEnum, Category> = {
   TRANSPORTATION: "transporte",
   FOOD: "alimentacao",

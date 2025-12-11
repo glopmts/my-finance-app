@@ -22,7 +22,7 @@ const Transactions = () => {
     <View
       className="flex-1 dark:bg-zinc-900 px-4"
       style={{
-        paddingTop: 10,
+        paddingTop: 16,
       }}
     >
       <View className="mt-10">

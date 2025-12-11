@@ -1,10 +1,17 @@
 import { use5TransactionsQuery } from "@/services/query/transactions.query";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { filterTransactionsByMonth } from "../../utils/dateUtils";
 import Alert from "../alerts/Alert-Infor";
+import { showPlatformMessage } from "../alerts/ToastMessage";
 import CardTransaction from "../cards/card-transactions";
 import ListWrapper from "../list-wrapper";
 
@@ -14,6 +21,9 @@ type PropsUser = {
 
 const LastestTransactionsPage = ({ userId }: PropsUser) => {
   const deviceColorScheme = useColorScheme();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const router = useRouter();
 
   const {
     recurringTransactions,
@@ -48,6 +58,11 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
     setRefreshing(true);
     await refetchRecurring();
     setRefreshing(false);
+  };
+
+  const handleNavegate = () => {
+    router.replace("/(main)/(home)/transactions");
+    showPlatformMessage("Redirecionando...");
   };
 
   if (isLoadingRecurring) {
@@ -86,11 +101,11 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
   }
 
   return (
-    <View className="w-full h-full">
+    <View className="w-full flex-1">
       <View className="mb-4 flex-row justify-between">
         <View>
           <Text className="dark:text-white font-semibold text-2xl">
-            últimas 5 transações
+            Últimas 5 transações
           </Text>
           <Text className="text-base text-zinc-400 dark:text-zinc-400"></Text>
         </View>
@@ -98,6 +113,7 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
           name="refresh"
           color={deviceColorScheme === "dark" ? "#fff" : "#27272a"}
           size={25}
+          onPress={handleRefresh}
         />
       </View>
       <ListWrapper
@@ -110,15 +126,38 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
         onEmptyActionPress={() => console.log("Nova transação")}
         keyExtractor={(item) => item.id}
         renderItem={(item, index) => (
-          <CardTransaction
-            transaction={item}
-            userId={userId}
-            refetch={refetchRecurring}
-            handleDelete={() => {}}
-            handleEdite={() => {}}
-          />
+          <>
+            <CardTransaction
+              key={index}
+              transaction={item}
+              userId={userId}
+              refetch={refetchRecurring}
+              handleDelete={() => {}}
+              handleEdite={() => {}}
+            />
+          </>
         )}
       />
+      <View className="w-full h-26 flex items-center justify-center mt-3">
+        <TouchableOpacity
+          className="border dark:bg-zinc-800 bg-zinc-300 dark:border-zinc-50/20 p-2 px-6 py-2 rounded-3xl"
+          onPress={handleNavegate}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text className="font-semibold dark:text-white ">Ver tudo</Text>
+            <MaterialIcons
+              name="chevron-right"
+              size={20}
+              color={isDark ? "#fff" : "#6b7280"}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -1,5 +1,5 @@
-import { UpdateService } from "@/services/updateService";
-import React, { useEffect } from "react";
+import { UpdateService } from "@/services/update.service";
+import React, { useCallback, useEffect } from "react";
 import { Alert, Button, View } from "react-native";
 
 interface UpdateCheckerProps {
@@ -11,13 +11,7 @@ export default function UpdateChecker({
   autoCheck = true,
   showManualButton = true,
 }: UpdateCheckerProps) {
-  useEffect(() => {
-    if (autoCheck) {
-      checkForUpdates();
-    }
-  }, [autoCheck]);
-
-  const checkForUpdates = async () => {
+  const checkForUpdates = useCallback(async () => {
     const hasUpdate = await UpdateService.checkForUpdate();
 
     if (hasUpdate) {
@@ -38,7 +32,13 @@ export default function UpdateChecker({
         ]
       );
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (autoCheck) {
+      checkForUpdates();
+    }
+  }, [autoCheck, checkForUpdates]);
 
   const applyUpdate = async () => {
     Alert.alert("Updating", "Downloading update...");

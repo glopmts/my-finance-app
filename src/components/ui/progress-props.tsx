@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextStyle,
+  useColorScheme,
   View,
   ViewStyle,
 } from "react-native";
@@ -64,14 +65,13 @@ const Progress: React.FC<ProgressProps> = ({
 }) => {
   const [animatedWidth] = React.useState(new Animated.Value(0));
   const [displayValue, setDisplayValue] = React.useState(0);
+  const deviceColorScheme = useColorScheme();
 
-  // Calcula a porcentagem
   const percentage = React.useMemo(() => {
     const clampedValue = Math.max(0, Math.min(value, maxValue));
     return (clampedValue / maxValue) * 100;
   }, [value, maxValue]);
 
-  // Formata o texto do label
   const formatLabel = React.useCallback(() => {
     switch (labelFormat) {
       case "percentage":
@@ -98,7 +98,6 @@ const Progress: React.FC<ProgressProps> = ({
       animatedWidth.setValue(percentage);
     }
 
-    // Atualiza o valor display para o texto
     const timer = setTimeout(() => {
       setDisplayValue(Math.round(percentage));
     }, animationDuration);
@@ -106,7 +105,6 @@ const Progress: React.FC<ProgressProps> = ({
     return () => clearTimeout(timer);
   }, [percentage, animated, animationDuration, animatedWidth]);
 
-  // Estilos dinâmicos
   const progressBarStyle = {
     width: animated
       ? animatedWidth.interpolate({
@@ -119,12 +117,10 @@ const Progress: React.FC<ProgressProps> = ({
     borderRadius,
   };
 
-  // Garantir que width seja number ou string terminando com '%'
   const getValidWidth = (w: number | string): number | `${number}%` => {
     if (typeof w === "number") return w;
     if (typeof w === "string" && w.trim().endsWith("%"))
       return w as `${number}%`;
-    // fallback para 100% se não for válido
     return "100%";
   };
 
@@ -132,7 +128,6 @@ const Progress: React.FC<ProgressProps> = ({
     width: getValidWidth(width),
   };
 
-  // Renderiza o texto baseado na posição
   const renderLabel = () => {
     if (!showLabel || labelPosition === "none") return null;
 
@@ -142,6 +137,7 @@ const Progress: React.FC<ProgressProps> = ({
           styles.label,
           labelStyle,
           labelPosition === "inside" && styles.insideLabel,
+          { color: deviceColorScheme === "dark" ? "#fffc" : "#27272a" },
         ]}
         numberOfLines={1}
         ellipsizeMode="tail"
@@ -165,7 +161,15 @@ const Progress: React.FC<ProgressProps> = ({
           {labelFormat === "percentage" &&
             showLabel &&
             labelPosition === "outside" && (
-              <Text style={[styles.label, labelStyle]}>{displayValue}%</Text>
+              <Text
+                style={[
+                  styles.label,
+                  labelStyle,
+                  { color: deviceColorScheme === "dark" ? "#fffc" : "#27272a" },
+                ]}
+              >
+                {displayValue}%
+              </Text>
             )}
         </View>
       )}
@@ -211,7 +215,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
   },
   insideLabelContainer: {
     position: "absolute",

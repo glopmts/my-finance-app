@@ -106,11 +106,11 @@ const TransactionsPage = ({ userId }: PropsUser) => {
         onDateChange={setSelectedDate}
       />
 
-      <View className="flex-row justify-between w- mb-2">
-        <View className="pb-4 flex-row gap-2.5 w-full">
+      <View className="flex-row w-full mb-2">
+        <View className="pb-4 flex-row justify-between gap-2.5 w-full">
           <TouchableOpacity
             onPress={handleSelect10Transactions}
-            className={`p-2 rounded-full ${
+            className={`p-2 py-3 px-4 rounded-full ${
               isSelecting10
                 ? "bg-blue-600 dark:bg-blue-700"
                 : "bg-gray-300 dark:bg-zinc-800"
@@ -131,7 +131,7 @@ const TransactionsPage = ({ userId }: PropsUser) => {
             <TouchableOpacity
               onPress={handleDeleteSelected}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full flex-row items-center gap-1"
+              className="bg-red-600 py-3 px-4 hover:bg-red-700 text-white p-2 rounded-full flex-row items-center gap-1"
             >
               {isDeleting ? (
                 <ActivityIndicator size="small" color="#fff" />

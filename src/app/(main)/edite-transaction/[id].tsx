@@ -5,9 +5,9 @@ import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { useTransactionQuery } from "@/services/query/transactions.query";
 import { TransactionService } from "@/services/transactions.service";
+import { TransactionUpdateProps } from "@/types/transaction-props";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, View } from "react-native";
-import { TransactionUpdateProps } from "../../../types/transaction-props";
 
 const EditerTransaction = () => {
   const { id } = useLocalSearchParams();
@@ -28,7 +28,7 @@ const EditerTransaction = () => {
   };
 
   if (loading || isLoadingTransaction) {
-    return <InlineLoading message="Carregando..." size="small" />;
+    return <InlineLoading message="Carregando..." size="large" />;
   }
 
   if (transactionError) {

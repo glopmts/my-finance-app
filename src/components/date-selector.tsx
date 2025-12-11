@@ -172,15 +172,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    justifyContent: "flex-end",
     marginBottom: 16,
   },
   dateSelectorContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
     borderRadius: 12,
     padding: 4,
     borderWidth: 1,
-    flex: 1,
+    width: "auto",
   },
   lightContainer: {
     backgroundColor: "#fafafa",

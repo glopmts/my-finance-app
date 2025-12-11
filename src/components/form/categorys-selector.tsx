@@ -1,9 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import {
-  CATEGORY_TRANSLATIONS,
-  CategoryEnum,
-} from "../../types/transaction-props";
+import { CATEGORY_TO_KEY } from "../../types/category_config";
+import { CategoryEnum } from "../../types/transaction-props";
 
 const getTypeColor = (category: CategoryEnum): string => {
   const colors: Record<CategoryEnum, string> = {
@@ -32,7 +30,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
 }) => {
   return (
     <View style={styles.typeContainer}>
-      {Object.entries(CATEGORY_TRANSLATIONS).map(([key, label]) => (
+      {Object.entries(CATEGORY_TO_KEY).map(([key, label]) => (
         <TouchableOpacity
           key={key}
           style={[

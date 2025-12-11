@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Alert from "../alerts/Alert-Infor";
 import SalaryCard from "../cards/card-salary";
-import ProgressBar from "../ProgressBar";
+import ProgressSpending from "../progress-spending";
 
 type PropsUser = {
   userId: string;
@@ -56,10 +56,6 @@ const InforCarSalary = ({ userId }: PropsUser) => {
     );
   }
 
-  const handleRefetch = async () => {
-    await refetch();
-  };
-
   const maxValueFilter = salary.map((c) => c.amount);
   const maxValue = maxValueFilter[0];
 
@@ -105,7 +101,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
             Gerenciar Finanças
           </Text>
         </View>
-        <ProgressBar userId={userId} maxValue={maxValue} />
+        <ProgressSpending userId={userId} maxValue={maxValue} />
       </View>
     </View>
   );

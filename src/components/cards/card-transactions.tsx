@@ -114,7 +114,7 @@ const CardTransaction = ({
   return (
     <View
       className={`
-      relative overflow-hidden border-zinc-200/50 bg-zinc-50/30 
+      relative overflow-hidden bg-zinc-400
       backdrop-blur-sm transition-all duration-200 hover:border-zinc-300/60 
       hover:bg-zinc-50/50 hover:shadow-sm dark:border-zinc-800/50 
       dark:bg-zinc-950 dark:hover:border-zinc-700/60

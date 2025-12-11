@@ -40,15 +40,12 @@ const Profile = () => {
             setIsSigningOut(true);
             await signOut();
 
-            // Fecha e reabre o app
             if (Constants.platform?.ios) {
-              // iOS não permite fechar o app programaticamente
               Alert.alert(
                 "Logout",
                 "Você foi desconectado. Por favor, feche e reabra o app."
               );
             } else if (Constants.platform?.android) {
-              // Android permite fechar o app programaticamente
               BackHandler.exitApp();
             }
           } catch (error) {
@@ -177,7 +174,7 @@ const Profile = () => {
   return (
     <View className="flex-1 bg-gray-50 dark:bg-zinc-900">
       <ScrollView
-        style={{ paddingTop: 16 }}
+        style={{ paddingTop: 20 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}

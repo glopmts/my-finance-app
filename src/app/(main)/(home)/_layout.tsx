@@ -69,7 +69,7 @@ export default function MainLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="upload-file-extrate"
         options={{
           title: "Extrato Bancário",
@@ -81,7 +81,7 @@ export default function MainLayout() {
             />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

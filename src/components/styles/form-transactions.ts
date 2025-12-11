@@ -20,7 +20,7 @@ export const createTransactionStyles = (colorScheme: ColorSchemeName) => {
       flex: 1,
       backgroundColor: colors.background,
       padding: 18,
-      paddingTop: Platform.OS === "ios" ? 16 : 32,
+      paddingTop: Platform.OS === "ios" ? 16 : 38,
     },
     header: {
       flexDirection: "row",

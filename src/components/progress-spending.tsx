@@ -9,7 +9,12 @@ import {
   View,
 } from "react-native";
 import { useTransactionsQuery } from "../services/query/transactions.query";
-import { Transaction } from "../types/transaction-props";
+import {
+  addMonths,
+  calculateTotalExpenses,
+  filterTransactionsByMonth,
+  formatMonthName,
+} from "../utils/dateUtils";
 
 type PropsProgress = {
   userId: string;
@@ -17,41 +22,7 @@ type PropsProgress = {
   expenseTypes?: string[];
 };
 
-// Utilitários para datas
-const addMonths = (date: Date, months: number): Date => {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-};
-
-const formatMonthName = (date: Date): string => {
-  return date.toLocaleDateString("pt-BR", {
-    month: "long",
-    year: "numeric",
-  });
-};
-
-const filterTransactionsByMonth = (
-  transactions: Transaction[],
-  targetMonth: Date
-): Transaction[] => {
-  return transactions.filter((transaction) => {
-    const transactionDate = new Date(transaction.date);
-    return (
-      transactionDate.getMonth() === targetMonth.getMonth() &&
-      transactionDate.getFullYear() === targetMonth.getFullYear()
-    );
-  });
-};
-
-const calculateTotalExpenses = (transactions: Transaction[]) => {
-  return transactions
-    .filter(
-      (t) =>
-        t.type === "EXPENSE" || t.type === "INCOME" || t.type === "TRANSFER"
-    )
-    .reduce((sum, t) => sum + Math.abs(Number(t.amount)), 0);
-};
+// Styles css
 const getStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
