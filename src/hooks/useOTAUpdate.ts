@@ -77,7 +77,6 @@ export const useOTAUpdate = () => {
         trigger: null,
       });
 
-      // Simular progresso (expo-updates não fornece progresso real)
       const progressInterval = setInterval(() => {
         setUpdateProgress((prev) => ({
           ...prev,
@@ -147,7 +146,6 @@ export const useOTAUpdate = () => {
       // Aguardar um momento para o usuário ver a mensagem
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Reiniciar o app com a nova atualização
       await Updates.reloadAsync();
     } catch (err) {
       setError("Erro ao instalar atualização");

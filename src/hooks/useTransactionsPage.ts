@@ -1,4 +1,4 @@
-import { showPlatformMessage } from "@/components/alerts/ToastMessage";
+import { showPlatformMessage } from "@/components/alerts/toast-message";
 import { useTransactionsQuery } from "@/services/query/transactions.query";
 import { TransactionService } from "@/services/transactions.service";
 import { TransactionProps } from "@/types/transaction-props";

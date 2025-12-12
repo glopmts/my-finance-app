@@ -1,5 +1,5 @@
-import EmptyState from "@/components/alerts/EmptyState";
-import { showPlatformMessage } from "@/components/alerts/ToastMessage";
+import EmptyState from "@/components/alerts/empty-state";
+import { showPlatformMessage } from "@/components/alerts/toast-message";
 import TransactionForm from "@/components/form/transaction-form";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";

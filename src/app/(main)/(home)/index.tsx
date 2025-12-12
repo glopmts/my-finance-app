@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import InforCarSalary from "@/components/home/card-infor-salary";
+import InforCarSalary from "@/components/home/cards-infor-salary";
 import CategoryTransactions from "@/components/home/category-user";
 import LastestTransactionsPage from "@/components/home/lastest-user-transactions";
 import { InlineLoading } from "@/components/Loading";
@@ -79,7 +79,7 @@ const HomePage = () => {
               </View>
 
               {/* transactions */}
-              <View className="mt-6">
+              <View className="mt-6 flex-1">
                 <LastestTransactionsPage userId={user?.id as string} />
               </View>
             </View>

@@ -3,7 +3,7 @@ import GetTransactionsQuery from "@/services/query/transactions.query";
 import { Transaction } from "@/types/transaction-props";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import Alert from "../alerts/Alert-Infor";
+import Alert from "../alerts/alert-infors";
 import SalaryCard from "../cards/card-salary";
 import ProgressSpending from "../progress-spending";
 
@@ -95,6 +95,7 @@ const InforCarSalary = ({ userId }: PropsUser) => {
         </View>
       </View>
 
+      {/* Progress expenses */}
       <View className="mt-9">
         <View className="pb-3">
           <Text className="dark:text-white font-semibold text-2xl">

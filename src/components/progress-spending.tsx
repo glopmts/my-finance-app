@@ -12,6 +12,7 @@ import { useTransactionsQuery } from "../services/query/transactions.query";
 import {
   addMonths,
   calculateTotalExpenses,
+  calculateTotalExpensesByTypes,
   filterTransactionsByMonth,
   formatMonthName,
 } from "../utils/dateUtils";
@@ -250,6 +251,7 @@ const ProgressBar: React.FC<{
 const ProgressSpending: React.FC<PropsProgress> = ({
   userId,
   maxValue = 10000,
+  expenseTypes,
 }) => {
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const {
@@ -332,7 +334,11 @@ const ProgressSpending: React.FC<PropsProgress> = ({
     transactions,
     selectedMonth
   );
-  const totalExpenses = calculateTotalExpenses(monthlyTransactions);
+  const totalExpenses =
+    expenseTypes && expenseTypes.length > 0
+      ? calculateTotalExpensesByTypes(monthlyTransactions, expenseTypes)
+      : calculateTotalExpenses(monthlyTransactions);
+
   const progressValue = Math.min((totalExpenses / maxValue) * 100, 100);
   const isOverLimit = totalExpenses > maxValue;
   const remainingBudget = maxValue - totalExpenses;

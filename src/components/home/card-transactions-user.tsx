@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-import Alert from "@/components/alerts/Alert-Infor";
+import Alert from "@/components/alerts/alert-infors";
 import CardTransaction from "@/components/cards/card-transactions";
 import DateSelector from "@/components/date-selector";
 import ListWrapper from "@/components/list-wrapper";

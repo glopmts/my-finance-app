@@ -1,17 +1,19 @@
 import { use5TransactionsQuery } from "@/services/query/transactions.query";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
+  Easing,
   Text,
   TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
 import { filterTransactionsByMonth } from "../../utils/dateUtils";
-import Alert from "../alerts/Alert-Infor";
-import { showPlatformMessage } from "../alerts/ToastMessage";
+import Alert from "../alerts/alert-infors";
+import { showPlatformMessage } from "../alerts/toast-message";
 import CardTransaction from "../cards/card-transactions";
 import ListWrapper from "../list-wrapper";
 
@@ -34,6 +36,7 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const filteredTransactions = recurringTransactions
     ? filterTransactionsByMonth(recurringTransactions, selectedDate)
@@ -54,16 +57,52 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
     return () => clearInterval(interval);
   }, [selectedDate]);
 
+  useEffect(() => {
+    if (refreshing) {
+      const animation = Animated.loop(
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      );
+      animation.start();
+
+      return () => {
+        animation.stop();
+      };
+    } else {
+      rotateAnim.setValue(0);
+    }
+  }, [refreshing, rotateAnim]);
+
   const handleRefresh = async () => {
     setRefreshing(true);
-    await refetchRecurring();
-    setRefreshing(false);
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+
+    try {
+      await refetchRecurring();
+      showPlatformMessage("Transações atualizadas!");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleNavegate = () => {
     router.replace("/(main)/(home)/transactions");
     showPlatformMessage("Redirecionando...");
   };
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
 
   if (isLoadingRecurring) {
     return (
@@ -109,12 +148,20 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
           </Text>
           <Text className="text-base text-zinc-400 dark:text-zinc-400"></Text>
         </View>
-        <MaterialCommunityIcons
-          name="refresh"
-          color={deviceColorScheme === "dark" ? "#fff" : "#27272a"}
-          size={25}
-          onPress={handleRefresh}
-        />
+        <TouchableOpacity onPress={handleRefresh} disabled={refreshing}>
+          <Animated.View
+            style={{
+              transform: [{ rotate: rotation }],
+              opacity: refreshing ? 0.7 : 1,
+            }}
+          >
+            <MaterialCommunityIcons
+              name="refresh"
+              color={deviceColorScheme === "dark" ? "#fff" : "#27272a"}
+              size={25}
+            />
+          </Animated.View>
+        </TouchableOpacity>
       </View>
       <ListWrapper
         data={filteredTransactions}
@@ -149,7 +196,7 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
               alignItems: "center",
             }}
           >
-            <Text className="font-semibold dark:text-white ">Ver tudo</Text>
+            <Text className="font-semibold dark:text-white">Ver tudo</Text>
             <MaterialIcons
               name="chevron-right"
               size={20}

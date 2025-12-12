@@ -29,14 +29,7 @@ export const getFrequencyLabel = (frequency: string) => {
   return labels[frequency as keyof typeof labels] || frequency;
 };
 
-const SalaryCard = ({
-  salary,
-  progressValue = 0,
-  isOverLimit = false,
-  isLoading,
-  transactions,
-  userId,
-}: SalaryCardProps) => {
+const SalaryCard = ({ salary }: SalaryCardProps) => {
   const deviceColorScheme = useColorScheme();
 
   return (

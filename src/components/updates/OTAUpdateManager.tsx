@@ -25,7 +25,6 @@ export const OTAUpdateManager: React.FC<OTAUpdateManagerProps> = ({
   const [showProgress, setShowProgress] = useState(false);
   const [showInstallScreen, setShowInstallScreen] = useState(false);
 
-  // Verificar atualizações ao montar o componente
   useEffect(() => {
     const checkUpdates = async () => {
       const hasUpdate = await checkForUpdates();
@@ -37,7 +36,6 @@ export const OTAUpdateManager: React.FC<OTAUpdateManagerProps> = ({
     checkUpdates();
   }, [checkForUpdates]);
 
-  // Monitorar progresso do download
   useEffect(() => {
     if (updateProgress.isDownloading) {
       setShowProgress(true);
@@ -55,7 +53,6 @@ export const OTAUpdateManager: React.FC<OTAUpdateManagerProps> = ({
     const success = await downloadUpdate();
 
     if (!success) {
-      // Se falhar, pode mostrar o alerta novamente ou uma mensagem de erro
       setShowProgress(false);
     }
   };

@@ -1,7 +1,7 @@
 import { useColorScheme } from "nativewind";
 import React from "react";
 import { FlatList, RefreshControl, View } from "react-native";
-import EmptyState from "./alerts/EmptyState";
+import EmptyState from "./alerts/empty-state";
 
 interface ListWrapperProps<T> {
   data: T[];

@@ -1,4 +1,4 @@
-import { showPlatformMessage } from "@/components/alerts/ToastMessage";
+import { showPlatformMessage } from "@/components/alerts/toast-message";
 import CreateTransactionForm from "@/components/form/transaction-form";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { API_BASE_URL } from "@/lib/api-from-url";

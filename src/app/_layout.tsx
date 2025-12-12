@@ -2,12 +2,7 @@ import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { PortalProvider } from "@gorhom/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  SplashScreen,
-  Stack,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
+import { SplashScreen, Stack, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
@@ -25,7 +20,6 @@ const publishableKey =
 
 function RootLayoutNav() {
   const [isAppReady, setAppReady] = useState(false);
-  const router = useRouter();
   const params = useLocalSearchParams();
 
   const queryClient = new QueryClient({

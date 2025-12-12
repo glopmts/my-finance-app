@@ -70,6 +70,45 @@ export const getCurrentMonthRange = () => {
   };
 };
 
+export const calculateTotalExpensesByTypes = (
+  transactions: Transaction[],
+  expenseTypes?: string[]
+): number => {
+  if (!transactions || transactions.length === 0) {
+    return 0;
+  }
+
+  return transactions.reduce((total, transaction) => {
+    if (expenseTypes && expenseTypes.length > 0) {
+      if (
+        expenseTypes.includes(transaction.type) ||
+        (transaction.category && expenseTypes.includes(transaction.category))
+      ) {
+        return total + Math.abs(transaction.amount);
+      }
+      return total;
+    }
+
+    const isExpense =
+      transaction.type === "EXPENSE" ||
+      transaction.amount < 0 ||
+      (transaction.category &&
+        [
+          "food",
+          "transport",
+          "entertainment",
+          "bills",
+          "shopping",
+          "health",
+        ].includes(transaction.category));
+
+    if (isExpense) {
+      return total + Math.abs(transaction.amount);
+    }
+    return total;
+  }, 0);
+};
+
 export const filterTransactionsByMonth = (
   transactions: Transaction[],
   monthDate: Date
@@ -93,15 +132,26 @@ export const formatMonthName = (date: Date) => {
   return format(date, "MMMM yyyy", { locale: ptBR });
 };
 
-export const calculateTotalExpenses = (transactions: Transaction[]) => {
-  return transactions
-    .filter(
-      (t) =>
-        t.type === "EXPENSE" || t.type === "INCOME" || t.type === "TRANSFER"
-    )
-    .reduce((sum, t) => sum + Math.abs(Number(t.amount)), 0);
-};
+export const calculateTotalExpenses = (transactions: Transaction[]): number => {
+  if (!transactions || transactions.length === 0) {
+    return 0;
+  }
 
+  return transactions.reduce((total, transaction) => {
+    const isExpense =
+      transaction.type === "EXPENSE" ||
+      transaction.amount < 0 ||
+      (transaction.category &&
+        ["food", "transport", "entertainment", "bills"].includes(
+          transaction.category
+        ));
+
+    if (isExpense) {
+      return total + Math.abs(transaction.amount);
+    }
+    return total;
+  }, 0);
+};
 export const addMonths = (date: Date, months: number) => {
   const newDate = new Date(date);
   newDate.setMonth(newDate.getMonth() + months);
