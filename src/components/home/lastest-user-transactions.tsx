@@ -3,7 +3,6 @@ import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Animated,
   Easing,
   Text,
@@ -16,6 +15,7 @@ import Alert from "../alerts/alert-infors";
 import { showPlatformMessage } from "../alerts/toast-message";
 import CardTransaction from "../cards/card-transactions";
 import ListWrapper from "../list-wrapper";
+import { TransactionsSkeleton } from "../SkeletonLoading";
 
 type PropsUser = {
   userId: string;
@@ -106,11 +106,8 @@ const LastestTransactionsPage = ({ userId }: PropsUser) => {
 
   if (isLoadingRecurring) {
     return (
-      <View className="w-full h-full flex-1 mt-8 items-center justify-center dark:bg-zinc-900">
-        <ActivityIndicator
-          size={30}
-          color={deviceColorScheme === "dark" ? "#fff" : "#27272a"}
-        />
+      <View className="w-full h-full flex-1 mt-8 dark:bg-zinc-900">
+        <TransactionsSkeleton />
       </View>
     );
   }

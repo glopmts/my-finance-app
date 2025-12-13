@@ -4,6 +4,17 @@ import { Redirect, Tabs } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { ActivityIndicator, View } from "react-native";
 
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
 export default function MainLayout() {
   const { isLoaded, isSignedIn } = useAuth();
   const { colorScheme } = useColorScheme();

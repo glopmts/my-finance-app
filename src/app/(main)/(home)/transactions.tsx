@@ -1,4 +1,4 @@
-import TransactionsPage from "@/components/home/card-transactions-user";
+import TransactionsPage from "@/components/home/transactions-user";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { Text, View } from "react-native";

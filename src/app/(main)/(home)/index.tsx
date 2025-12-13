@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
-import InforCarSalary from "@/components/home/cards-infor-salary";
 import CategoryTransactions from "@/components/home/category-user";
+import InforCarSalary from "@/components/home/infor-salary";
 import LastestTransactionsPage from "@/components/home/lastest-user-transactions";
 import { InlineLoading } from "@/components/Loading";
 import { OTAUpdateManager } from "@/components/updates/OTAUpdateManager";

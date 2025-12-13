@@ -2,17 +2,18 @@ import GetSalaryQuery from "@/services/query/salary.query";
 import GetTransactionsQuery from "@/services/query/transactions.query";
 import { Transaction } from "@/types/transaction-props";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import Alert from "../alerts/alert-infors";
 import SalaryCard from "../cards/card-salary";
 import ProgressSpending from "../progress-spending";
+import { SalarySkeleton } from "../SkeletonLoading";
 
 type PropsUser = {
   userId: string;
 };
 
 const InforCarSalary = ({ userId }: PropsUser) => {
-  const { salary, error, isLoading, refetch } = GetSalaryQuery(userId);
+  const { salary, isLoading } = GetSalaryQuery(userId);
   const { mockTransaction, loader } = GetTransactionsQuery(userId);
   const router = useRouter();
 
@@ -26,8 +27,8 @@ const InforCarSalary = ({ userId }: PropsUser) => {
 
   if (isLoading || loader) {
     return (
-      <View className="w-full h-full flex-1 items-center justify-center bg-zinc-900">
-        <ActivityIndicator size={30} color="#ffff" />
+      <View className="w-full h-full flex-1 bg-zinc-900">
+        <SalarySkeleton />
       </View>
     );
   }
