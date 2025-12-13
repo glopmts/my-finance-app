@@ -11,11 +11,13 @@ import {
 interface InstallUpdateScreenProps {
   visible: boolean;
   onInstall: () => void;
+  onCancel: () => void;
 }
 
 export const InstallUpdateScreen: React.FC<InstallUpdateScreenProps> = ({
   visible,
   onInstall,
+  onCancel,
 }) => {
   return (
     <Modal visible={visible} transparent={false} animationType="slide">

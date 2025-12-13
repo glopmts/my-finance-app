@@ -1,18 +1,13 @@
-import type React from "react";
-import {
-  ActivityIndicator,
-  Modal,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { ActivityIndicator, Modal, StyleSheet, Text, View } from "react-native";
 
 interface UpdateProgressProps {
   visible: boolean;
   progress: number;
   isDownloading: boolean;
   isInstalling: boolean;
+  source?: "expo" | "github";
 }
 
 export const UpdateProgress: React.FC<UpdateProgressProps> = ({
@@ -20,26 +15,74 @@ export const UpdateProgress: React.FC<UpdateProgressProps> = ({
   progress,
   isDownloading,
   isInstalling,
+  source,
 }) => {
-  const getStatusText = () => {
-    if (isDownloading) return "Baixando atualização...";
-    if (isInstalling) return "Instalando atualização...";
-    return "Preparando...";
+  if (!visible) return null;
+
+  const getTitle = () => {
+    if (isDownloading) {
+      return source === "github"
+        ? "Baixando APK..."
+        : "Baixando atualização...";
+    }
+    if (isInstalling) {
+      return "Instalando atualização...";
+    }
+    return "Processando...";
+  };
+
+  const getDescription = () => {
+    if (source === "github" && isDownloading) {
+      return "O APK está sendo baixado. Em seguida, você será solicitado a instalá-lo.";
+    }
+    if (isInstalling) {
+      return "O aplicativo será reiniciado automaticamente.";
+    }
+    return "Aguarde enquanto processamos a atualização...";
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
-        <View style={styles.progressContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-
-          <Text style={styles.statusText}>{getStatusText()}</Text>
-
-          <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, { width: `${progress}%` }]} />
+        <View style={styles.container}>
+          <View style={styles.iconContainer}>
+            {isDownloading || isInstalling ? (
+              <ActivityIndicator size={48} color="#007AFF" />
+            ) : (
+              <Ionicons
+                name="cloud-download-outline"
+                size={48}
+                color="#007AFF"
+              />
+            )}
           </View>
 
-          <Text style={styles.percentageText}>{Math.round(progress)}%</Text>
+          <Text style={styles.title}>{getTitle()}</Text>
+          <Text style={styles.description}>{getDescription()}</Text>
+
+          {(isDownloading || isInstalling) && (
+            <View style={styles.progressContainer}>
+              <View style={styles.progressBar}>
+                <View
+                  style={[styles.progressFill, { width: `${progress}%` }]}
+                />
+              </View>
+              <Text style={styles.progressText}>{Math.round(progress)}%</Text>
+            </View>
+          )}
+
+          {source === "github" && isDownloading && progress === 100 && (
+            <View style={styles.noteContainer}>
+              <Ionicons
+                name="information-circle-outline"
+                size={16}
+                color="#666"
+              />
+              <Text style={styles.noteText}>
+                Em breve você será redirecionado para instalar o APK
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -54,49 +97,64 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  progressContainer: {
-    backgroundColor: "#FFFFFF",
+  container: {
+    backgroundColor: "white",
     borderRadius: 16,
-    padding: 32,
+    padding: 24,
     width: "100%",
-    maxWidth: 400,
+    maxWidth: 320,
     alignItems: "center",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
   },
-  statusText: {
+  iconContainer: {
+    marginBottom: 20,
+  },
+  title: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginTop: 20,
-    marginBottom: 16,
+    fontWeight: "bold",
+    color: "#1C1C1E",
+    marginBottom: 8,
     textAlign: "center",
   },
-  progressBarContainer: {
+  description: {
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  progressContainer: {
     width: "100%",
-    height: 8,
-    backgroundColor: "#F0F0F0",
-    borderRadius: 4,
-    overflow: "hidden",
-    marginBottom: 12,
+    marginTop: 20,
   },
   progressBar: {
+    height: 6,
+    backgroundColor: "#E5E5EA",
+    borderRadius: 3,
+    overflow: "hidden",
+    marginBottom: 8,
+  },
+  progressFill: {
     height: "100%",
     backgroundColor: "#007AFF",
-    borderRadius: 4,
+    borderRadius: 3,
   },
-  percentageText: {
+  progressText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#666666",
+    color: "#666",
+    textAlign: "center",
+  },
+  noteContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F8F8",
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  noteText: {
+    fontSize: 12,
+    color: "#666",
+    marginLeft: 8,
+    flex: 1,
   },
 });

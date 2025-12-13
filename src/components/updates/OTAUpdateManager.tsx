@@ -17,42 +17,73 @@ export const OTAUpdateManager: React.FC<OTAUpdateManagerProps> = ({
     updateInfo,
     updateProgress,
     checkForUpdates,
-    downloadUpdate,
-    installUpdate,
+    downloadAndInstallUpdate,
+    error,
+    githubRelease,
   } = useOTAUpdate();
 
   const [showAlert, setShowAlert] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
   const [showInstallScreen, setShowInstallScreen] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
     const checkUpdates = async () => {
-      const hasUpdate = await checkForUpdates();
-      if (hasUpdate) {
-        setShowAlert(true);
+      try {
+        setIsChecking(true);
+        const hasUpdate = await checkForUpdates();
+
+        if (hasUpdate) {
+          setShowAlert(true);
+        }
+      } catch (err) {
+        console.error("Erro ao verificar atualizações:", err);
+      } finally {
+        setIsChecking(false);
       }
     };
 
-    checkUpdates();
+    const timer = setTimeout(() => {
+      checkUpdates();
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, [checkForUpdates]);
 
   useEffect(() => {
     if (updateProgress.isDownloading) {
       setShowProgress(true);
+      setShowAlert(false);
     } else if (
       updateProgress.progress === 100 &&
-      !updateProgress.isInstalling
+      !updateProgress.isInstalling &&
+      !updateProgress.isDownloading
     ) {
-      setShowProgress(false);
-      setShowInstallScreen(true);
+      if (updateInfo.source === "expo") {
+        setShowProgress(false);
+        setShowInstallScreen(true);
+      } else {
+        setShowProgress(false);
+      }
+    } else if (updateProgress.isInstalling) {
+      setShowProgress(true);
     }
-  }, [updateProgress]);
+  }, [updateProgress, updateInfo.source]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Erro no gerenciador de atualizações:", error);
+    }
+  }, [error]);
 
   const handleDownload = async () => {
-    setShowAlert(false);
-    const success = await downloadUpdate();
+    try {
+      setShowAlert(false);
+      setShowProgress(true);
 
-    if (!success) {
+      await downloadAndInstallUpdate();
+    } catch (err) {
+      console.error("Erro ao iniciar download:", err);
       setShowProgress(false);
     }
   };
@@ -62,29 +93,49 @@ export const OTAUpdateManager: React.FC<OTAUpdateManagerProps> = ({
   };
 
   const handleInstall = async () => {
-    await installUpdate();
+    try {
+      setShowInstallScreen(false);
+      setShowProgress(true);
+
+      if (updateInfo.source === "expo") {
+      }
+    } catch (err) {
+      console.error("Erro na instalação:", err);
+      setShowProgress(false);
+    }
   };
+
+  if (isChecking) {
+    return <View style={{ flex: 1 }}>{children}</View>;
+  }
 
   return (
     <View style={{ flex: 1 }}>
       {children}
 
+      {/* Alerta de atualização disponível */}
       <UpdateAlert
-        visible={showAlert}
+        visible={showAlert && updateInfo.isAvailable}
+        updateInfo={updateInfo}
+        githubRelease={githubRelease}
         onDownload={handleDownload}
         onCancel={handleCancel}
       />
 
+      {/* Tela de progresso (download/instalação) */}
       <UpdateProgress
         visible={showProgress}
         progress={updateProgress.progress}
         isDownloading={updateProgress.isDownloading}
         isInstalling={updateProgress.isInstalling}
+        source={updateInfo.source}
       />
 
+      {/* Tela de confirmação para instalação OTA (só para Expo) */}
       <InstallUpdateScreen
-        visible={showInstallScreen}
+        visible={showInstallScreen && updateInfo.source === "expo"}
         onInstall={handleInstall}
+        onCancel={() => setShowInstallScreen(false)}
       />
     </View>
   );

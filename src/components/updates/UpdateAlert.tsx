@@ -10,15 +10,42 @@ import {
 
 interface UpdateAlertProps {
   visible: boolean;
+  updateInfo?: any;
+  githubRelease?: any;
   onDownload: () => void;
   onCancel: () => void;
 }
 
 export const UpdateAlert: React.FC<UpdateAlertProps> = ({
   visible,
+  updateInfo,
+  githubRelease,
   onDownload,
   onCancel,
 }) => {
+  if (!visible) return null;
+
+  const getTitle = () => {
+    if (updateInfo?.source === "github" && githubRelease) {
+      return `Atualização ${githubRelease.version}`;
+    }
+    return "Atualização Disponível!";
+  };
+
+  const getDescription = () => {
+    if (updateInfo?.source === "github" && githubRelease) {
+      return githubRelease.releaseNotes;
+    }
+    return "Uma nova versão do aplicativo está disponível. Recomendamos que atualize para a versão mais recente.";
+  };
+
+  const getButtonText = () => {
+    if (updateInfo?.source === "github") {
+      return "Baixar APK";
+    }
+    return "Baixar e Instalar";
+  };
+
   return (
     <Modal
       visible={visible}
@@ -28,10 +55,8 @@ export const UpdateAlert: React.FC<UpdateAlertProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.alertContainer}>
-          <Text style={styles.title}>Atualização Disponível</Text>
-          <Text style={styles.message}>
-            Uma nova versão do aplicativo está disponível. Deseja baixar agora?
-          </Text>
+          <Text style={styles.title}>{getTitle()}</Text>
+          <Text style={styles.message}>{getDescription()}</Text>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity
@@ -47,7 +72,7 @@ export const UpdateAlert: React.FC<UpdateAlertProps> = ({
               onPress={onDownload}
               activeOpacity={0.7}
             >
-              <Text style={styles.downloadButtonText}>Baixar</Text>
+              <Text style={styles.downloadButtonText}>{getButtonText()}</Text>
             </TouchableOpacity>
           </View>
         </View>

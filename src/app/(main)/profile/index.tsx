@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   Alert,
   BackHandler,
+  ColorSchemeName,
   Image,
   ScrollView,
   Text,
@@ -16,6 +17,7 @@ import {
 
 import { QueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
+import { UpdateScreen } from "../../../components/updates/UpdateHeaderButton";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ const Profile = () => {
   const router = useRouter();
   const deviceColorScheme = useColorScheme();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const handleSignOut = () => {
     Alert.alert("Sair", "Tem certeza que deseja sair da sua conta?", [
@@ -62,68 +65,9 @@ const Profile = () => {
     ]);
   };
 
-  const ProfileOption = ({
-    icon,
-    title,
-    subtitle,
-    onPress,
-    showArrow = true,
-    isDestructive = false,
-  }: {
-    icon: string;
-    title: string;
-    subtitle?: string;
-    onPress: () => void;
-    showArrow?: boolean;
-    isDestructive?: boolean;
-  }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      className="flex-row items-center py-4 px-4 bg-white dark:bg-zinc-800 rounded-xl mb-3 border border-gray-200 dark:border-zinc-700"
-      style={{
-        shadowColor: deviceColorScheme === "dark" ? "#000" : "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-      }}
-    >
-      <View className="mr-4">
-        <Ionicons
-          name={icon as any}
-          size={24}
-          color={
-            isDestructive
-              ? "#ef4444"
-              : deviceColorScheme === "dark"
-                ? "#fff"
-                : "#374151"
-          }
-        />
-      </View>
-      <View className="flex-1">
-        <Text
-          className={`text-lg font-medium ${
-            isDestructive ? "text-red-500" : "text-gray-900 dark:text-white"
-          }`}
-        >
-          {title}
-        </Text>
-        {subtitle && (
-          <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {subtitle}
-          </Text>
-        )}
-      </View>
-      {showArrow && !isDestructive && (
-        <Ionicons
-          name="chevron-forward"
-          size={20}
-          color={deviceColorScheme === "dark" ? "#9ca3af" : "#6b7280"}
-        />
-      )}
-    </TouchableOpacity>
-  );
+  const handleModalUpdate = () => {
+    setOpenModal((prev) => !prev);
+  };
 
   if (loading) {
     return <InlineLoading message="Carregando..." size="large" />;
@@ -172,122 +116,200 @@ const Profile = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-zinc-900">
-      <ScrollView
-        style={{ paddingTop: 20 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View className="px-4 mb-6">
-          <View className="flex-row items-center justify-between mb-8 mt-8">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="bg-white dark:bg-zinc-800 p-2 rounded-full border border-gray-200 dark:border-zinc-700"
+    <>
+      <View className="flex-1 bg-gray-50 dark:bg-zinc-900">
+        <ScrollView
+          style={{ paddingTop: 20 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View className="px-4 mb-6">
+            <View className="flex-row items-center justify-between mb-8 mt-8">
+              <TouchableOpacity
+                onPress={() => router.back()}
+                className="bg-white dark:bg-zinc-800 p-2 rounded-full border border-gray-200 dark:border-zinc-700"
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 2,
+                  elevation: 2,
+                }}
+              >
+                <Ionicons
+                  name="arrow-back"
+                  size={24}
+                  color={deviceColorScheme === "dark" ? "#fff" : "#374151"}
+                />
+              </TouchableOpacity>
+              <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                Perfil
+              </Text>
+              <View style={{ width: 40 }} />
+            </View>
+
+            {/* User Info Card */}
+            <View
+              className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-gray-200 dark:border-zinc-700"
               style={{
                 shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
+                shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
-                shadowRadius: 2,
-                elevation: 2,
+                shadowRadius: 8,
+                elevation: 4,
               }}
             >
-              <Ionicons
-                name="arrow-back"
-                size={24}
-                color={deviceColorScheme === "dark" ? "#fff" : "#374151"}
-              />
-            </TouchableOpacity>
-            <Text className="text-2xl font-bold text-gray-900 dark:text-white">
-              Perfil
-            </Text>
-            <View style={{ width: 40 }} />
-          </View>
-
-          {/* User Info Card */}
-          <View
-            className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-gray-200 dark:border-zinc-700"
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            <View className="items-center">
-              {user?.image ? (
-                <Image
-                  source={{ uri: user.image }}
-                  className="w-20 h-20 rounded-full mb-4"
-                />
-              ) : (
-                <View className="w-20 h-20 rounded-full bg-blue-500 items-center justify-center mb-4">
-                  <Text className="text-white text-2xl font-bold">
-                    {user?.name?.charAt(0) || user?.name?.charAt(0) || "U"}
-                  </Text>
-                </View>
-              )}
-              <Text className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                {user?.name || `${user?.name || ""}`.trim() || "Usuário"}
-              </Text>
-              {user?.email && (
-                <Text className="text-gray-500 dark:text-gray-400 text-center">
-                  {user.email}
+              <View className="items-center">
+                {user?.image ? (
+                  <Image
+                    source={{ uri: user.image }}
+                    className="w-20 h-20 rounded-full mb-4"
+                  />
+                ) : (
+                  <View className="w-20 h-20 rounded-full bg-blue-500 items-center justify-center mb-4">
+                    <Text className="text-white text-2xl font-bold">
+                      {user?.name?.charAt(0) || user?.name?.charAt(0) || "U"}
+                    </Text>
+                  </View>
+                )}
+                <Text className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  {user?.name || `${user?.name || ""}`.trim() || "Usuário"}
                 </Text>
-              )}
+                {user?.email && (
+                  <Text className="text-gray-500 dark:text-gray-400 text-center">
+                    {user.email}
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Profile Options */}
-        <View className="px-4 mb-8">
-          <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Configurações
-          </Text>
+          {/* Profile Options */}
+          <View className="px-4 mb-8">
+            <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Configurações
+            </Text>
 
-          <ProfileOption
-            icon="help-circle-outline"
-            title="Ajuda e Suporte"
-            subtitle="Central de ajuda"
-            onPress={() => {
-              // Implementar navegação para ajuda
-              Alert.alert("Em breve", "Funcionalidade em desenvolvimento");
-            }}
-          />
+            <ProfileOption
+              icon="help-circle-outline"
+              title="Ajuda e Suporte"
+              subtitle="Central de ajuda"
+              onPress={() => {
+                // Implementar navegação para ajuda
+                Alert.alert("Em breve", "Funcionalidade em desenvolvimento");
+              }}
+              deviceColorScheme={deviceColorScheme}
+            />
 
-          <ProfileOption
-            icon="information-circle-outline"
-            title="Sobre o App"
-            subtitle="Versão, termos e políticas"
-            onPress={() => {
-              Alert.alert(
-                "Sobre o App",
-                `Versão: ${Constants.expoConfig?.version || "1.0.0"}\nBuild: ${Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || "N/A"}`
-              );
-            }}
-          />
-        </View>
+            <ProfileOption
+              icon="information-circle-outline"
+              title="Sobre o App"
+              subtitle="Versão, termos e políticas"
+              onPress={() => {
+                Alert.alert(
+                  "Sobre o App",
+                  `Versão: ${Constants.expoConfig?.version || "1.0.0"}\nBuild: ${Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || "N/A"}`
+                );
+              }}
+              deviceColorScheme={deviceColorScheme}
+            />
 
-        {/* Sign Out Section */}
-        <View className="px-4 mb-8">
-          <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Conta
-          </Text>
+            <ProfileOption
+              icon="download"
+              title="Verificar Atualizações"
+              subtitle="Buscar novas atualizações app"
+              onPress={handleModalUpdate}
+              deviceColorScheme={deviceColorScheme}
+            />
+          </View>
 
-          <ProfileOption
-            icon={isSigningOut ? "reload" : "log-out-outline"}
-            title={isSigningOut ? "Saindo..." : "Sair"}
-            onPress={handleSignOut}
-            showArrow={false}
-            isDestructive={true}
-          />
-        </View>
+          {/* Sign Out Section */}
+          <View className="px-4 mb-8">
+            <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Conta
+            </Text>
 
-        {/* Bottom Spacing */}
-        <View style={{ height: 50 }} />
-      </ScrollView>
-    </View>
+            <ProfileOption
+              icon={isSigningOut ? "reload" : "log-out-outline"}
+              title={isSigningOut ? "Saindo..." : "Sair"}
+              onPress={handleSignOut}
+              showArrow={false}
+              isDestructive={true}
+            />
+          </View>
+
+          {/* Bottom Spacing */}
+          <View style={{ height: 50 }} />
+        </ScrollView>
+      </View>
+      {openModal && <UpdateScreen onClose={() => setOpenModal(false)} />}
+    </>
   );
 };
+
+const ProfileOption = ({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  showArrow = true,
+  isDestructive = false,
+  deviceColorScheme,
+}: {
+  icon: string;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  showArrow?: boolean;
+  isDestructive?: boolean;
+  deviceColorScheme?: ColorSchemeName;
+}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    className="flex-row items-center py-4 px-4 bg-white dark:bg-zinc-800 rounded-xl mb-3 border border-gray-200 dark:border-zinc-700"
+    style={{
+      shadowColor: deviceColorScheme === "dark" ? "#000" : "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
+    }}
+  >
+    <View className="mr-4">
+      <Ionicons
+        name={icon as any}
+        size={24}
+        color={
+          isDestructive
+            ? "#ef4444"
+            : deviceColorScheme === "dark"
+              ? "#fff"
+              : "#374151"
+        }
+      />
+    </View>
+    <View className="flex-1">
+      <Text
+        className={`text-lg font-medium ${
+          isDestructive ? "text-red-500" : "text-gray-900 dark:text-white"
+        }`}
+      >
+        {title}
+      </Text>
+      {subtitle && (
+        <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {subtitle}
+        </Text>
+      )}
+    </View>
+    {showArrow && !isDestructive && (
+      <Ionicons
+        name="chevron-forward"
+        size={20}
+        color={deviceColorScheme === "dark" ? "#9ca3af" : "#6b7280"}
+      />
+    )}
+  </TouchableOpacity>
+);
 
 export default Profile;
