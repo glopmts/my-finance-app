@@ -2,8 +2,9 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useColorScheme } from "nativewind";
-import { ActivityIndicator, View } from "react-native";
 
+import { InlineLoading } from "@/components/Loading";
+import { useClerkUser } from "@/hooks/useClerkUser";
 import * as Notifications from "expo-notifications";
 
 Notifications.setNotificationHandler({
@@ -16,20 +17,19 @@ Notifications.setNotificationHandler({
 });
 
 export default function MainLayout() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useClerkUser();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  if (!isLoaded) {
-    return (
-      <View className="flex-1 justify-center items-center bg-zinc-900">
-        <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
-    );
-  }
-
   if (!isSignedIn) {
     return <Redirect href="/(auth)/sign-in" />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <InlineLoading message="Carregando dados do usuário..." size="large" />
+    );
   }
 
   return (
@@ -70,7 +70,7 @@ export default function MainLayout() {
       <Tabs.Screen
         name="news-transaction"
         options={{
-          title: "Nova tranasação",
+          title: "Nova transação",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="newspaper-plus"
@@ -80,19 +80,15 @@ export default function MainLayout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="upload-file-extrate"
+      <Tabs.Screen
+        name="logs-aplication"
         options={{
-          title: "Extrato Bancário",
+          title: "Logs",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="file-upload"
-              color={color}
-              size={size}
-            />
+            <Ionicons name="document-text" color={color} size={size} />
           ),
         }}
-      /> */}
+      />
     </Tabs>
   );
 }

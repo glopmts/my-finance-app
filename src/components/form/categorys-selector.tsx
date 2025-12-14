@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../../contexts/ThemeContext";
 import { CATEGORY_TO_KEY } from "../../types/category_config";
 import { CategoryEnum } from "../../types/transaction-props";
 
@@ -28,6 +29,40 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
   selectedCategory,
   onCategoryChange,
 }) => {
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 16,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 16,
+    },
+    typeContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    typeButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: theme.theme.border,
+      backgroundColor: theme.theme.backgroundTertiary,
+    },
+    typeButtonText: {
+      fontSize: 14,
+      color: theme.theme.warning,
+    },
+    typeButtonTextActive: {
+      color: "#FFF",
+      fontWeight: "bold",
+    },
+  });
+
   return (
     <View style={styles.typeContainer}>
       {Object.entries(CATEGORY_TO_KEY).map(([key, label]) => (
@@ -54,37 +89,5 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  typeContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  typeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#DDD",
-    backgroundColor: "#F5F5F5",
-  },
-  typeButtonText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  typeButtonTextActive: {
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-});
 
 export default CategorySelector;

@@ -17,7 +17,7 @@ import {
 
 import { QueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
-import { UpdateScreen } from "../../../components/updates/UpdateHeaderButton";
+import { UpdateScreen } from "../../../components/updates/UpdateScreenAll";
 
 const queryClient = new QueryClient();
 

@@ -228,7 +228,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         {/* category select */}
         <View>
           <Text style={styles.title} className="mb-4">
-            Selecciona una categoría:
+            Selecione uma categroia:
           </Text>
 
           <CategorySelector

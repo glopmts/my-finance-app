@@ -51,8 +51,7 @@ const SalaryPage = () => {
         refetch();
       }
     } catch (error) {
-      console.error("Erro ao atualizar salário:", error);
-      Alert.alert("Erro", "Não foi possível atualizar o salário");
+      Alert.alert("Erro", "Não foi possível atualizar o salário" + error);
     }
   };
 

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../../contexts/ThemeContext";
 import {
   PaymentSource,
   PAYMENTSOURCE_TRANSLATIONS,
@@ -33,11 +34,54 @@ const PaymentSourceSelector: React.FC<PaymentSourceSelectorProps> = ({
   colorScheme,
   onSourceChange,
 }) => {
-  const isDark = colorScheme === "dark";
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      marginVertical: 16,
+    },
+    title: {
+      fontSize: 21,
+      fontWeight: "600",
+      marginBottom: 12,
+    },
+    sourcesContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 10,
+    },
+    sourceButton: {
+      backgroundColor: theme.theme.backgroundTertiary,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 20,
+      borderWidth: 1.5,
+      borderColor: theme.theme.border,
+      minWidth: 100,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 1.5,
+      elevation: 2,
+    },
+    sourceButtonText: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: theme.theme.warning,
+    },
+    sourceButtonTextActive: {
+      color: "#FFF",
+      fontWeight: "bold",
+    },
+  });
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: isDark ? "#18181b" : "#ffffff" }]}>
+      <Text style={[styles.title, { color: theme.theme.text }]}>
         Fonte de Pagamento:
       </Text>
       <View style={styles.sourcesContainer}>
@@ -67,48 +111,5 @@ const PaymentSourceSelector: React.FC<PaymentSourceSelectorProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 16,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
-  sourcesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  sourceButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: "#DDD",
-    backgroundColor: "#FFF",
-    minWidth: 100,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1.5,
-    elevation: 2,
-  },
-  sourceButtonText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#666",
-  },
-  sourceButtonTextActive: {
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-});
 
 export default PaymentSourceSelector;

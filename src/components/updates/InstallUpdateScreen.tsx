@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../../contexts/ThemeContext";
 
 interface InstallUpdateScreenProps {
   visible: boolean;
@@ -19,9 +20,17 @@ export const InstallUpdateScreen: React.FC<InstallUpdateScreenProps> = ({
   onInstall,
   onCancel,
 }) => {
+  const theme = useTheme();
   return (
     <Modal visible={visible} transparent={false} animationType="slide">
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.theme.background,
+          },
+        ]}
+      >
         <View style={styles.content}>
           <View style={styles.iconContainer}>
             <Text style={styles.iconText}>✓</Text>
@@ -54,7 +63,6 @@ export const InstallUpdateScreen: React.FC<InstallUpdateScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,

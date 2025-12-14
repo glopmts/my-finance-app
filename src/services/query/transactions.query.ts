@@ -1,6 +1,12 @@
+import { showPlatformMessage } from "@/components/alerts/toast-message";
+import { API_BASE_URL } from "@/lib/api-from-url";
 import { api } from "@/lib/axios";
-import { Transaction } from "@/types/transaction-props";
+import {
+  Transaction,
+  TransactionPropsCreater,
+} from "@/types/transaction-props";
 import { useQuery } from "@tanstack/react-query";
+import { Alert, Platform, ToastAndroid } from "react-native";
 
 export interface TransactionFilters {
   startDate?: string;
@@ -93,6 +99,32 @@ export function useTransactionQuery(transactionId: string) {
     isRefetchingTransaction,
   };
 }
+
+export const handleSubmitNewsTransaction = async (
+  transaction: TransactionPropsCreater
+) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/transaction/creater`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(transaction),
+    });
+
+    if (response.status === 201) {
+      showPlatformMessage("Transação criada com sucesso!");
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      if (Platform.OS === "android") {
+        ToastAndroid.show(error.message, ToastAndroid.SHORT);
+      } else {
+        Alert.alert("Erro", error.message);
+      }
+    }
+  }
+};
 
 // Hook para buscar 5 últimas transações
 export function use5TransactionsQuery(userId: string) {

@@ -66,13 +66,13 @@ const InforCarSalary = ({ userId }: PropsUser) => {
 
   return (
     <View>
-      <View className="mb-4 flex-row justify-between">
+      <View className="mb-4 flex-row items-center justify-between">
         <Text className="dark:text-white font-semibold text-2xl">
           Gestão de Salários
         </Text>
         <TouchableOpacity
           onPress={() => router.push("/(main)/salary-form")}
-          className="dark:bg-zinc-800 bg-gray-300 shadow p-2 px-3 rounded-full"
+          className="dark:bg-zinc-800 bg-gray-300 shadow p-3 px-4 rounded-full"
         >
           <Text className="dark:text-zinc-300 font-semibold text-xl">
             {salary ? "Atualizar Salario" : "Add Salario"}

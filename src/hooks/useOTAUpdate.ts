@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 import * as Updates from "expo-updates";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Linking, Platform } from "react-native";
+import { showPlatformMessage } from "../components/alerts/toast-message";
 import type {
   GitHubReleaseInfo,
   UpdateInfo,
@@ -147,7 +148,7 @@ export const useOTAUpdate = () => {
           const downloadUrl = getApkDownloadUrl(data);
 
           if (!downloadUrl) {
-            console.log("⚠️ Nenhum APK encontrado na release");
+            showPlatformMessage("⚠️ Nenhum APK encontrado na release");
             return null;
           }
 

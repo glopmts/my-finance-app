@@ -1,41 +1,17 @@
-import { showPlatformMessage } from "@/components/alerts/toast-message";
 import CreateTransactionForm from "@/components/form/transaction-form";
 import { useClerkUser } from "@/hooks/useClerkUser";
-import { API_BASE_URL } from "@/lib/api-from-url";
-import { useTransactionQuery } from "@/services/query/transactions.query";
-import { TransactionPropsCreater } from "@/types/transaction-props";
+import {
+  handleSubmitNewsTransaction,
+  useTransactionQuery,
+} from "@/services/query/transactions.query";
 import { useRouter } from "expo-router";
-import { Alert, Platform, ToastAndroid, View } from "react-native";
+import { View } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 
 const NewsTransactionPage = () => {
   const { user, loading } = useClerkUser();
   const { refetchTransaction } = useTransactionQuery(user?.id as string);
   const router = useRouter();
-
-  const handleSubmit = async (transaction: TransactionPropsCreater) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/transaction/creater`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(transaction),
-      });
-
-      if (response.status === 201) {
-        showPlatformMessage("Transação criada com sucesso!");
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        if (Platform.OS === "android") {
-          ToastAndroid.show(error.message, ToastAndroid.SHORT);
-        } else {
-          Alert.alert("Erro", error.message);
-        }
-      }
-    }
-  };
 
   if (loading) {
     return (
@@ -54,7 +30,7 @@ const NewsTransactionPage = () => {
     <View className="flex-1">
       <CreateTransactionForm
         userId={user?.id as string}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitNewsTransaction}
         mode="create"
         onCancel={handleCancel}
         refetch={refetchTransaction}
