@@ -44,7 +44,6 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     initialDate: new Date(),
   });
 
-  // Loading state
   if (isLoadingTransactions) {
     return (
       <View className="w-full h-full flex-1 mt-8 items-center justify-center dark:bg-zinc-900">
@@ -56,7 +55,6 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     );
   }
 
-  // Empty state
   if (!transactions || transactions.length === 0) {
     return (
       <Alert
@@ -69,7 +67,6 @@ const TransactionsPage = ({ userId }: PropsUser) => {
     );
   }
 
-  // Error state
   if (transactionsError) {
     return (
       <Alert

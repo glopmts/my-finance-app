@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 
 import { useEffect, useState } from "react";
+import { LogProvider } from "../contexts/LogContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { UserProvider } from "../contexts/UserContext";
 import "./global.css";
@@ -62,17 +63,19 @@ function RootLayoutNav() {
             <PortalProvider>
               <PaperProvider>
                 <ThemeProvider>
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      headerStyle: {
-                        backgroundColor: "#27272a",
-                      },
-                      title: Array.isArray(params.name)
-                        ? params.name.join(", ")
-                        : params.name,
-                    }}
-                  ></Stack>
+                  <LogProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        headerStyle: {
+                          backgroundColor: "#27272a",
+                        },
+                        title: Array.isArray(params.name)
+                          ? params.name.join(", ")
+                          : params.name,
+                      }}
+                    ></Stack>
+                  </LogProvider>
                 </ThemeProvider>
               </PaperProvider>
             </PortalProvider>

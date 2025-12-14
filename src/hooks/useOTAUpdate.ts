@@ -9,6 +9,7 @@ import type {
   UpdateInfo,
   UpdateProgress,
 } from "../types/update.types";
+import { showUpdateNotification } from "./use-notifications";
 
 const GITHUB_REPO = "glopmts/my-finance-app";
 const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
@@ -46,7 +47,7 @@ export const useOTAUpdate = () => {
 
         const { status } = await Notifications.requestPermissionsAsync();
         if (status !== "granted") {
-          console.log("Permissão para notificações não concedida");
+          showPlatformMessage("Permissão para notificações não concedida");
         }
       } catch (err) {
         console.error("Erro ao configurar notificações:", err);
@@ -65,7 +66,7 @@ export const useOTAUpdate = () => {
         buildNumber: (manifest?.revisionId as string) || "1",
       };
     } catch (error) {
-      console.error("Erro ao obter versão:", error);
+      showPlatformMessage("Erro ao obter versão:" + error);
       return { version: "1.0.0", buildNumber: "1" };
     }
   }, []);
@@ -310,13 +311,10 @@ export const useOTAUpdate = () => {
             });
             hasExpoUpdate = true;
 
-            await Notifications.scheduleNotificationAsync({
-              content: {
-                title: "Atualização Disponível",
-                body: "Uma nova atualização OTA está disponível!",
-              },
-              trigger: null,
-            });
+            await showUpdateNotification(
+              "Atualização Disponível",
+              "Uma nova atualização OTA está disponível!"
+            );
           }
         } catch (expoError) {
           console.error("Erro ao verificar Expo OTA:", expoError);
