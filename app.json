@@ -32,7 +32,16 @@
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#1E1E1E",
-      "package": "com.glopblog.myfinance"
+      "package": "com.glopblog.myfinance",
+      "permissions": [
+        "REQUEST_INSTALL_PACKAGES",
+        "INTERNET",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",

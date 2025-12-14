@@ -1,5 +1,5 @@
 import { useTheme } from "@/contexts/ThemeContext";
-import { useOTAUpdate } from "@/hooks/useOTAUpdate";
+import { useOTAUpdate } from "@/hooks/use-updates-app";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, {
   BottomSheetBackdrop,
@@ -372,11 +372,11 @@ export const UpdateScreen = ({ onClose }: { onClose: () => void }) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{
         backgroundColor: theme.theme.background,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
       }}
       handleStyle={{
         backgroundColor: theme.theme.background,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
       }}
       handleIndicatorStyle={{
         backgroundColor: theme.theme.textSecondary,
