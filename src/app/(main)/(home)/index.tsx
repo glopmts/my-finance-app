@@ -8,10 +8,13 @@ import { useClerkUser } from "@/hooks/useClerkUser";
 import { useAuth } from "@clerk/clerk-expo";
 import { QueryClient } from "@tanstack/react-query";
 import { SplashScreen, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Platform, Text, View } from "react-native";
+
+import * as QuickActions from "expo-quick-actions";
 
 SplashScreen.preventAutoHideAsync();
+
 const queryClient = new QueryClient();
 
 const HomePage = () => {
@@ -36,6 +39,34 @@ const HomePage = () => {
     }
     setPrevUserId(userId!);
   }, [prevUserId, router, userId]);
+
+  React.useEffect(() => {
+    QuickActions.setItems([
+      {
+        title: "Nova transação",
+        icon: Platform.select({
+          ios: "symbol:",
+          android: "transaction_icone_one",
+        }),
+        id: "transaction",
+        params: {
+          href: "/(main)/(home)/transactions",
+        },
+      },
+    ]);
+  }, []);
+
+  useEffect(() => {
+    const sub = QuickActions.addListener((action) => {
+      if (!action) return;
+
+      if (action.id === "transaction") {
+        router.push("/(main)/(home)/transactions");
+      }
+    });
+
+    return () => sub.remove();
+  }, [router]);
 
   if (loading) {
     return <InlineLoading message="Carregando..." size="large" />;

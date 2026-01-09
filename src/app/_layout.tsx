@@ -8,9 +8,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 
 import { useEffect, useState } from "react";
+import OfflineScreen from "../components/OfflineScreen";
 import { LogProvider } from "../contexts/LogContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { UserProvider } from "../contexts/UserContext";
+import { NetworkProvider, useNetwork } from "../hooks/useNetwork";
 import "./global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +24,7 @@ const publishableKey =
 function RootLayoutNav() {
   const [isAppReady, setAppReady] = useState(false);
   const params = useLocalSearchParams();
+  const { isConnected } = useNetwork();
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -47,6 +50,10 @@ function RootLayoutNav() {
     prepareApp();
   }, []);
 
+  if (!isConnected) {
+    return <OfflineScreen />;
+  }
+
   if (!isAppReady) return null;
 
   return (
@@ -63,19 +70,21 @@ function RootLayoutNav() {
             <PortalProvider>
               <PaperProvider>
                 <ThemeProvider>
-                  <LogProvider>
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        headerStyle: {
-                          backgroundColor: "#27272a",
-                        },
-                        title: Array.isArray(params.name)
-                          ? params.name.join(", ")
-                          : params.name,
-                      }}
-                    ></Stack>
-                  </LogProvider>
+                  <NetworkProvider>
+                    <LogProvider>
+                      <Stack
+                        screenOptions={{
+                          headerShown: false,
+                          headerStyle: {
+                            backgroundColor: "#27272a",
+                          },
+                          title: Array.isArray(params.name)
+                            ? params.name.join(", ")
+                            : params.name,
+                        }}
+                      ></Stack>
+                    </LogProvider>
+                  </NetworkProvider>
                 </ThemeProvider>
               </PaperProvider>
             </PortalProvider>

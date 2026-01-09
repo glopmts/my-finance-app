@@ -27,10 +27,10 @@ type PropsProgress = {
 const getStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
-      backgroundColor: isDark ? "#09090b" : "#ffffff",
+      backgroundColor: isDark ? "#27272a" : "#ffffff",
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: isDark ? "#27272a" : "#e4e4e7",
+      borderColor: isDark ? "#3f3f46" : "#e4e4e7",
       overflow: "hidden",
     },
     loadingContainer: {
@@ -81,8 +81,8 @@ const getStyles = (isDark: boolean) =>
     },
     header: {
       padding: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: isDark ? "#27272a" : "#e4e4e7",
+      borderBottomWidth: 2,
+      borderBottomColor: isDark ? "#18181b" : "#e4e4e7",
     },
     headerContent: {
       flexDirection: "row",
@@ -99,7 +99,7 @@ const getStyles = (isDark: boolean) =>
       width: 40,
       height: 40,
       borderRadius: 8,
-      backgroundColor: isDark ? "#27272a" : "#f4f4f5",
+      backgroundColor: isDark ? "#18181b" : "#f4f4f5",
       alignItems: "center",
       justifyContent: "center",
     },
@@ -130,7 +130,7 @@ const getStyles = (isDark: boolean) =>
       paddingVertical: 6,
       backgroundColor: "transparent",
       borderWidth: 1,
-      borderColor: isDark ? "#27272a" : "#e4e4e7",
+      borderColor: isDark ? "#18181b" : "#e4e4e7",
       borderRadius: 6,
       alignSelf: "flex-start",
     },

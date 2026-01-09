@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
 
 interface ToastMessageProps {
@@ -12,17 +12,17 @@ const ToastMessage: React.FC<ToastMessageProps> = ({
   duration = ToastAndroid.SHORT,
   title = "Aviso",
 }) => {
-  const showToast = () => {
+  const showToast = useCallback(() => {
     if (Platform.OS === "android") {
       ToastAndroid.show(message, duration);
     } else {
       Alert.alert(title, message);
     }
-  };
+  }, [duration, message, title]);
 
   React.useEffect(() => {
     showToast();
-  }, [message, duration, title]);
+  }, [message, duration, title, showToast]);
   return null;
 };
 

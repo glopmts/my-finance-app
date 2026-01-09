@@ -1,6 +1,7 @@
 import { api } from "../lib/axios";
 import {
   ApiResponse,
+  SalaryUpdateResponse,
   Transaction,
   TransactionFilters,
   TransactionResponse,
@@ -29,6 +30,9 @@ export class TransactionService {
         "/transaction/creater",
         cleanedData
       );
+
+      await this.updateUserSalaryAfterTransaction(transactionData.userId);
+
       return response.data;
     } catch (error: any) {
       console.error("Erro detalhado ao criar transação:", error.response?.data);
@@ -212,6 +216,20 @@ export class TransactionService {
       return response.data;
     } catch (error) {
       console.error("Erro ao obter resumo financeiro:", error);
+      throw error;
+    }
+  }
+
+  static async updateUserSalaryAfterTransaction(
+    userId: string
+  ): Promise<SalaryUpdateResponse> {
+    try {
+      const response = await api.post<SalaryUpdateResponse>(
+        `/salary/update-after-transaction/${userId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao atualizar salário:", error);
       throw error;
     }
   }

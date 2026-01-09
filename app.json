@@ -2,7 +2,7 @@
   "expo": {
     "name": "My Finance",
     "slug": "myfinance",
-    "version": "1.0.9",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myfinance",
@@ -33,6 +33,7 @@
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#1E1E1E",
       "package": "com.glopblog.myfinance",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "REQUEST_INSTALL_PACKAGES",
         "INTERNET",
@@ -70,8 +71,23 @@
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false
         }
-      ]
-    ],
+      ],
+      ["expo-quick-actions",
+     {
+        "androidIcons": {
+          "transaction_icone_one": {
+            "foregroundImage": "./assets/images/transaction_icone.png",
+            "backgroundColor": "#ffffff"
+          },
+          "transaction_icone_two": {
+            "foregroundImage": "./assets/images/transaction_icone.png",
+            "backgroundColor": "#282A35"
+          },
+          "transaction_icone_three": "./assets/images/transaction_icone.png"
+        }
+      }
+    ]
+  ],
     "experiments": {
       "typedRoutes": true
     },

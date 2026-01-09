@@ -185,12 +185,16 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>{getTitle()}</Text>
-          {/* {onCancel && (
+          {mode === "edit" && onCancel && (
             <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={getIconColor()} />
+              <Ionicons
+                name="arrow-back-circle-outline"
+                size={28}
+                color={getIconColor()}
+              />
             </TouchableOpacity>
-          )} */}
+          )}
+          <Text style={styles.title}>{getTitle()}</Text>
         </View>
 
         {/* Transaction Type Selector */}

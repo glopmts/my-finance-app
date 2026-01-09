@@ -18,7 +18,7 @@ type PropsUser = {
   userId: string;
 };
 
-const TransactionsPage = ({ userId }: PropsUser) => {
+const TransactionsUserCard = ({ userId }: PropsUser) => {
   const deviceColorScheme = useColorScheme();
 
   const {
@@ -172,4 +172,4 @@ const TransactionsPage = ({ userId }: PropsUser) => {
   );
 };
 
-export default TransactionsPage;
+export default TransactionsUserCard;

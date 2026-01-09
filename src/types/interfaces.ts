@@ -30,6 +30,11 @@ export interface SalaryCreater {
   createdAt: string;
 }
 
+export interface SalaryUpdateResponse {
+  success: boolean;
+  newSalary: number;
+  previousSalary: number;
+}
 export interface ApiResponse<T> {
   data: T;
   message: string;

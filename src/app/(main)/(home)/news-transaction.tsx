@@ -2,7 +2,7 @@ import CreateTransactionForm from "@/components/form/transaction-form";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import {
   handleSubmitNewsTransaction,
-  useTransactionQuery,
+  useTransactionsQuery,
 } from "@/services/query/transactions.query";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
@@ -10,7 +10,7 @@ import { ActivityIndicator, Text } from "react-native-paper";
 
 const NewsTransactionPage = () => {
   const { user, loading } = useClerkUser();
-  const { refetchTransaction } = useTransactionQuery(user?.id as string);
+  const { refetchTransactions } = useTransactionsQuery(user?.id as string);
   const router = useRouter();
 
   if (loading) {
@@ -33,7 +33,7 @@ const NewsTransactionPage = () => {
         onSubmit={handleSubmitNewsTransaction}
         mode="create"
         onCancel={handleCancel}
-        refetch={refetchTransaction}
+        refetch={refetchTransactions}
       />
     </View>
   );

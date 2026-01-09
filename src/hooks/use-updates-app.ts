@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import * as DocumentPicker from "expo-document-picker";
 import * as IntentLauncher from "expo-intent-launcher";
 import * as Notifications from "expo-notifications";
@@ -45,23 +46,53 @@ export const useOTAUpdate = () => {
   const hasCheckedRef = useRef(false);
   const notificationCooldownRef = useRef(false);
 
-  // Obter versão atual
-  const getCurrentVersion = useCallback(() => {
+  // Função para obter versão do app
+  const getAppVersion = useCallback((): string => {
     try {
-      const manifest = Updates.manifest as Record<string, unknown> | null;
-      return {
-        version: (manifest?.version as string) || "1.0.0",
-        buildNumber: (manifest?.revisionId as string) || "1",
-      };
+      // Prioridade 1: Constants.expoConfig
+      const expoConfig = Constants.expoConfig;
+      if (expoConfig?.version) {
+        return expoConfig.version;
+      }
+
+      // Prioridade 2: Manifest (para builds EAS)
+      const manifest = Updates.manifest as any;
+      if (manifest?.version) {
+        return manifest.version;
+      }
+
+      // Prioridade 3: Metadados do manifest
+      if (manifest?.metadata?.version) {
+        return manifest.metadata.version;
+      }
+
+      if (manifest?.metadata?.expoClient?.version) {
+        return manifest.metadata.expoClient.version;
+      }
+
+      if (manifest?.extra?.expoClient?.version) {
+        return manifest.extra.expoClient.version;
+      }
+
+      // Fallback
+      return "1.0.0";
     } catch (error) {
-      showPlatformMessage("Erro ao obter versão:" + error);
-      errorLog("Erro ao obter versão", "OTAUpdate", {
-        error: error instanceof Error ? error.message : String(error),
-        url: GITHUB_API_URL,
-      });
-      return { version: "1.0.0", buildNumber: "1" };
+      console.error("Erro ao obter versão do app:", error);
+      return "1.0.0";
     }
-  }, [errorLog]);
+  }, []);
+
+  // Obter versão atual para o componente
+  const getCurrentVersion = useCallback(() => {
+    const version = getAppVersion();
+    return {
+      version,
+      buildNumber:
+        Constants.expoConfig?.android?.versionCode?.toString() ||
+        Constants.expoConfig?.ios?.buildNumber?.toString() ||
+        "1",
+    };
+  }, [getAppVersion]);
 
   // Comparador de versões
   const compareVersions = useCallback((v1: string, v2: string): number => {
@@ -217,7 +248,7 @@ export const useOTAUpdate = () => {
       info,
     ]);
 
-  // Verificar atualizações (Expo OTA + GitHub)
+  // Verificar atualizações (Expo OTA + GitHub) - CORRIGIDA
   const checkForUpdates = useCallback(
     async (showNotification = true): Promise<boolean> => {
       try {
@@ -234,7 +265,17 @@ export const useOTAUpdate = () => {
             const expoUpdate = await Updates.checkForUpdateAsync();
 
             if (expoUpdate.isAvailable) {
-              info("📦 Atualização Expo OTA disponível", "Update_OTA");
+              // Obter versões para logging
+              const currentVersion = getAppVersion();
+              const newVersion =
+                (expoUpdate.manifest as any)?.version ||
+                (expoUpdate.manifest as any)?.metadata?.version ||
+                "unknown";
+
+              info("📦 Atualização Expo OTA disponível", "Update_OTA", {
+                currentVersion,
+                newVersion,
+              });
 
               setUpdateInfo({
                 isAvailable: true,
@@ -250,6 +291,8 @@ export const useOTAUpdate = () => {
                   "Uma nova atualização OTA está disponível!"
                 );
               }
+            } else {
+              debug("Nenhuma atualização OTA encontrada", "OTAUpdate");
             }
           } catch (expoError) {
             showPlatformMessage("Erro ao verificar Expo OTA:");
@@ -287,7 +330,14 @@ export const useOTAUpdate = () => {
         return false;
       }
     },
-    [checkGitHubUpdate, updateInfo.isAvailable, errorLog, info]
+    [
+      checkGitHubUpdate,
+      updateInfo.isAvailable,
+      errorLog,
+      info,
+      debug,
+      getAppVersion,
+    ]
   );
 
   // Função para abrir seletor de arquivo APK
@@ -358,7 +408,6 @@ export const useOTAUpdate = () => {
       if (canOpen) {
         await Linking.openURL(apkUri);
       } else {
-        // Fallback: tentar com file:// URI
         const fileUri = apkUri.startsWith("file://")
           ? apkUri
           : `file://${apkUri}`;
@@ -559,10 +608,8 @@ export const useOTAUpdate = () => {
                 {
                   text: "Configurar Permissão",
                   onPress: async () => {
-                    // Tentar novamente obter permissão
                     const permissionGranted = await ensureInstallPermission();
                     if (permissionGranted) {
-                      // Se concedeu, continuar com o fluxo normal
                       continueWithUpdateFlow();
                     }
                   },
@@ -573,7 +620,6 @@ export const useOTAUpdate = () => {
           }
         }
 
-        // Se tem permissão ou não é Android, continuar com fluxo normal
         continueWithUpdateFlow();
       }
     } catch (err) {
@@ -638,6 +684,7 @@ export const useOTAUpdate = () => {
     hasPermission,
     githubRelease,
     isCheckingPermission,
+    currentVersion: getAppVersion(),
     checkForUpdates: forceCheckUpdates,
     downloadAndInstallUpdate,
     openAPKFilePicker,

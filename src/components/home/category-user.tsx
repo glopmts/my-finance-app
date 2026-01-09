@@ -27,9 +27,9 @@ const getStyles = (isDark: boolean) =>
     card: {
       overflow: "hidden",
       borderWidth: 1,
-      backgroundColor: isDark ? "#09090b" : "#ffffff",
+      backgroundColor: isDark ? "#27272a" : "#ffffff",
       borderRadius: 12,
-      borderColor: isDark ? "#27272a" : "#e4e4e7",
+      borderColor: isDark ? "#3f3f46" : "#e4e4e7",
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,

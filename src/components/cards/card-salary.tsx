@@ -1,9 +1,4 @@
-import {
-  AntDesign,
-  Feather,
-  FontAwesome,
-  FontAwesome6,
-} from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { Text, useColorScheme, View } from "react-native";
 import { formatCurrency, formatDate } from "../../lib/formatDts";
@@ -31,14 +26,21 @@ export const getFrequencyLabel = (frequency: string) => {
 
 const SalaryCard = ({ salary }: SalaryCardProps) => {
   const deviceColorScheme = useColorScheme();
+  const isDark = deviceColorScheme === "dark";
 
   return (
-    <View className=" relative border bg-white dark:bg-black ring-1 ring-zinc-100 dark:ring-zinc-900 transition-all duration-200 rounded-3xl hover:shadow-md hover:ring-zinc-200 dark:hover:ring-zinc-800">
+    <View className="relative bg-white dark:bg-zinc-800 ring-1 ring-zinc-100 dark:ring-zinc-900 transition-all duration-200 rounded-3xl hover:shadow-md hover:ring-zinc-200 dark:hover:ring-zinc-800">
       <View className="p-6">
         {/* Header Section */}
         <View className="flex-row items-start justify-between mb-6">
           <View className="flex-row items-center gap-3">
-            <View className="flex-row p-4 h-auto items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-900 ring-1 ring-zinc-200 dark:ring-zinc-800">
+            <View
+              className="flex-row p-4 h-auto items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-700 ring-1 ring-zinc-200 dark:ring-zinc-800"
+              style={{
+                borderColor: isDark ? "#3f3f46" : "",
+                borderWidth: 1,
+              }}
+            >
               <FontAwesome
                 name="dollar"
                 size={21}
@@ -68,13 +70,21 @@ const SalaryCard = ({ salary }: SalaryCardProps) => {
         </View>
 
         {/* Amount Section */}
-        <View className="mb-6">
+        <View
+          className="mb-6"
+          style={{
+            flexDirection: "column",
+            gap: 4,
+          }}
+        >
           <Text className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white mb-1">
             {formatCurrency(salary.amount)}
           </Text>
-          <View className="flex-row items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
-            <FontAwesome6 name="arrow-trend-up" size={24} />
-            <Text>Valor base mensal</Text>
+          <View className="dark:bg-zinc-700/30 bg-zinc-300/30 w-full h-1" />
+          <View className="flex-row items-center gap-1 text-xs">
+            <Text className=" text-zinc-500 dark:text-white">
+              Valor base mensal
+            </Text>
           </View>
         </View>
 

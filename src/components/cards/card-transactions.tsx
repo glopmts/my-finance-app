@@ -6,6 +6,7 @@ import { useColorScheme } from "nativewind";
 import React, { forwardRef } from "react";
 import {
   GestureResponderEvent,
+  Pressable,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
@@ -117,13 +118,20 @@ const CardTransaction = ({
       relative overflow-hidden bg-zinc-400
       backdrop-blur-sm transition-all duration-200 hover:border-zinc-300/60 
       hover:bg-zinc-50/50 hover:shadow-sm dark:border-zinc-800/50 
-      dark:bg-zinc-950 dark:hover:border-zinc-700/60
-      rounded-3xl mb-3 border
+      dark:bg-zinc-800 
+      rounded-3xl mb-3
     `}
+      style={{
+        borderColor: isDark ? "#3f3f46" : "",
+        borderWidth: 1,
+      }}
     >
       <CustomTouchableOpacity
         onLongPress={() => handleTransaction(transaction.id)}
-        onPress={handleCardClick}
+        onPress={(e) => {
+          handleCardClick(e);
+          handleCheckboxClick(e);
+        }}
         activeOpacity={0.9}
         className={`
           ${isSelected ? "border-red-500 rounded-3xl border-2" : ""}
@@ -139,19 +147,20 @@ const CardTransaction = ({
           <View className="flex flex-row justify-between items-center w-full mb-3">
             <View className="flex flex-row items-center gap-1.5 flex-1">
               <View className="mr-3">
-                <TouchableOpacity
-                  onPress={handleCheckboxClick}
-                  className={`
+                <Pressable onPress={handleCheckboxClick}>
+                  <TouchableOpacity
+                    className={`
                     h-5 w-5 rounded-md border-2 flex items-center justify-center
                     ${isSelected ? "bg-blue-500 border-blue-500" : "bg-transparent border-zinc-400 dark:border-zinc-600"}
                   `}
-                >
-                  <Text>
-                    {isSelected && (
-                      <AntDesign name="check" size={16} color="white" />
-                    )}
-                  </Text>
-                </TouchableOpacity>
+                  >
+                    <Text>
+                      {isSelected && (
+                        <AntDesign name="check" size={16} color="white" />
+                      )}
+                    </Text>
+                  </TouchableOpacity>
+                </Pressable>
               </View>
               <View className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
                 <Entypo

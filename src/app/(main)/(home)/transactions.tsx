@@ -1,4 +1,4 @@
-import TransactionsPage from "@/components/home/transactions-user";
+import TransactionsUserCard from "@/components/home/transactions-user-card";
 import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
 import { Text, View } from "react-native";
@@ -12,8 +12,8 @@ const Transactions = () => {
 
   if (!isAuthenticated) {
     return (
-      <View className="flex-1 w-full h-full items-center justify-center dark:bg-zinc-900">
-        <Text className="text-white">Usuário não autenticado</Text>
+      <View className="flex-1 w-full h-full min-h-screen items-center justify-center dark:bg-zinc-900">
+        <Text className="dark:text-white">Usuário não autenticado</Text>
       </View>
     );
   }
@@ -26,7 +26,7 @@ const Transactions = () => {
       }}
     >
       <View className="mt-10">
-        <TransactionsPage userId={user?.id as string} />
+        <TransactionsUserCard userId={user?.id as string} />
       </View>
     </View>
   );
