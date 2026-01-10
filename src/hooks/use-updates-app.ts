@@ -550,77 +550,94 @@ export const useOTAUpdate = () => {
   const downloadAndInstallUpdate = useCallback(async () => {
     try {
       if (updateInfo.source === "expo") {
-        // Atualização OTA do Expo
-        setUpdateProgress({
-          isDownloading: true,
-          isInstalling: false,
-          progress: 0,
-        });
-
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: "Download Iniciado",
-            body: "Baixando atualização OTA...",
-          },
-          trigger: null,
-        });
-
-        const result = await Updates.fetchUpdateAsync();
-
-        if (result.isNew) {
-          setUpdateProgress({
-            isDownloading: false,
-            isInstalling: true,
-            progress: 100,
-          });
-
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: "Atualização Pronta",
-              body: "Reiniciando o app...",
-            },
-            trigger: null,
-          });
-
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          await Updates.reloadAsync();
-        }
+        // ... código Expo OTA ...
       } else if (updateInfo.source === "github" && updateInfo.githubInfo) {
-        // Verificar permissão antes de prosseguir
-        if (Platform.OS === "android") {
-          const hasInstallPermission = await ensureInstallPermission();
+        // Para GitHub updates, usar um fluxo mais simples
+        Alert.alert(
+          `🎉 Atualização ${updateInfo.githubInfo.version}`,
+          `${updateInfo.githubInfo.releaseNotes}\n\n` +
+            `Esta atualização será instalada manualmente.`,
+          [
+            {
+              text: "Cancelar",
+              style: "cancel",
+            },
+            {
+              text: "Baixar e Instalar",
+              onPress: async () => {
+                try {
+                  // 1. Mostrar instruções antes de baixar
+                  Alert.alert(
+                    "📋 Passo a Passo",
+                    `Siga estes passos:\n\n` +
+                      `1. O APK será baixado (toque em "Baixar" no navegador)\n` +
+                      `2. Quando o download terminar, abra o APK\n` +
+                      `3. Se for a primeira vez, o Android pedirá permissão\n` +
+                      `4. Siga as instruções na tela\n\n` +
+                      `Quer continuar?`,
+                    [
+                      {
+                        text: "Cancelar",
+                        style: "cancel",
+                      },
+                      {
+                        text: "Entendi, Baixar",
+                        onPress: async () => {
+                          // Abrir o link de download diretamente
+                          const canOpen = await Linking.canOpenURL(
+                            updateInfo.githubInfo!.downloadUrl
+                          );
 
-          if (!hasInstallPermission) {
-            // Se o usuário negou a permissão, mostrar alerta explicativo
-            Alert.alert(
-              "Permissão Necessária",
-              "Para instalar atualizações, é necessário permitir a instalação de apps de fontes desconhecidas.\n\n" +
-                "Sem esta permissão, você pode baixar o APK mas não poderá instalá-lo.",
-              [
-                {
-                  text: "Continuar sem Instalar",
-                  style: "cancel",
-                  onPress: () => {
-                    // Apenas abrir o link para download
-                    Linking.openURL(updateInfo.githubInfo!.downloadUrl);
-                  },
-                },
-                {
-                  text: "Configurar Permissão",
-                  onPress: async () => {
-                    const permissionGranted = await ensureInstallPermission();
-                    if (permissionGranted) {
-                      continueWithUpdateFlow();
-                    }
-                  },
-                },
-              ]
-            );
-            return;
-          }
-        }
+                          if (canOpen) {
+                            await Linking.openURL(
+                              updateInfo.githubInfo!.downloadUrl
+                            );
 
-        continueWithUpdateFlow();
+                            // Mostrar lembrete após alguns segundos
+                            setTimeout(() => {
+                              Alert.alert(
+                                "✅ Download Iniciado",
+                                `Quando o download terminar:\n\n` +
+                                  `• Abra o arquivo APK da pasta Downloads\n` +
+                                  `• Se aparecer um aviso de segurança, toque em "Configurações" e ative a permissão\n` +
+                                  `• Depois volte e toque em "Instalar" novamente`,
+                                [
+                                  { text: "OK" },
+                                  {
+                                    text: "Ajuda",
+                                    onPress: () => {
+                                      Alert.alert(
+                                        "🆘 Ajuda com Instalação",
+                                        `Problemas comuns:\n\n` +
+                                          `1. "Não é possível abrir o arquivo" → Use um gerenciador de arquivos\n` +
+                                          `2. "Instalação bloqueada" → Ative Fontes Desconhecidas\n` +
+                                          `3. "App não instalado" → Desinstale a versão antiga primeiro`,
+                                        [{ text: "OK" }]
+                                      );
+                                    },
+                                  },
+                                ]
+                              );
+                            }, 2000);
+                          } else {
+                            Alert.alert(
+                              "Erro",
+                              "Não foi possível abrir o link de download.",
+                              [{ text: "OK" }]
+                            );
+                          }
+                        },
+                      },
+                    ]
+                  );
+                } catch (error) {
+                  console.error("Erro no fluxo de atualização:", error);
+                  Alert.alert("Erro", "Ocorreu um erro ao iniciar o download.");
+                }
+              },
+            },
+          ]
+        );
       }
     } catch (err) {
       const errorMessage =
@@ -636,12 +653,7 @@ export const useOTAUpdate = () => {
         progress: 0,
       });
     }
-  }, [
-    updateInfo.source,
-    updateInfo.githubInfo,
-    continueWithUpdateFlow,
-    ensureInstallPermission,
-  ]);
+  }, [updateInfo.source, updateInfo.githubInfo]);
 
   // Resetar verificação quando o app voltar do background
   useEffect(() => {

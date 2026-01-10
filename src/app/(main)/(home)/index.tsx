@@ -9,9 +9,11 @@ import { useAuth } from "@clerk/clerk-expo";
 import { QueryClient } from "@tanstack/react-query";
 import { SplashScreen, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { FlatList, Platform, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
-import * as QuickActions from "expo-quick-actions";
+import { useQuickActions } from "@/hooks/useQuickActions";
+import { notificationService } from "../../../contexts/index.notification";
+import { NotificationHandler } from "../../../contexts/NotificationHandler";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,6 +24,13 @@ const HomePage = () => {
   const { userId } = useAuth();
   const router = useRouter();
   const [prevUserId, setPrevUserId] = useState<string | null>(null);
+
+  useQuickActions();
+
+  const handleNotificationTap = (data: any) => {
+    console.log("Notificação tocada:", data);
+    // Navegar para a tela relevante baseada nos dados
+  };
 
   useEffect(() => {
     if (loading) {
@@ -40,33 +49,18 @@ const HomePage = () => {
     setPrevUserId(userId!);
   }, [prevUserId, router, userId]);
 
-  React.useEffect(() => {
-    QuickActions.setItems([
-      {
-        title: "Nova transação",
-        icon: Platform.select({
-          ios: "symbol:",
-          android: "transaction_icone_one",
-        }),
-        id: "transaction",
-        params: {
-          href: "/(main)/(home)/transactions",
-        },
-      },
-    ]);
-  }, []);
-
   useEffect(() => {
-    const sub = QuickActions.addListener((action) => {
-      if (!action) return;
+    if (user) {
+      const interval = setInterval(
+        () => {
+          notificationService.checkAndUpdateToken(user.id);
+        },
+        24 * 60 * 60 * 1000
+      );
 
-      if (action.id === "transaction") {
-        router.push("/(main)/(home)/transactions");
-      }
-    });
-
-    return () => sub.remove();
-  }, [router]);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   if (loading) {
     return <InlineLoading message="Carregando..." size="large" />;
@@ -91,39 +85,45 @@ const HomePage = () => {
   }
 
   return (
-    <OTAUpdateManager>
-      <View className="flex-1 dark:bg-zinc-900">
-        <View className="px-4 pt-4 bg-gray-200 dark:bg-zinc-900 z-10">
-          <Header />
+    <>
+      <NotificationHandler
+        onNotificationTap={handleNotificationTap}
+        showAlerts={true}
+      />
+      <OTAUpdateManager>
+        <View className="flex-1 dark:bg-zinc-900">
+          <View className="px-4 pt-4 bg-gray-200 dark:bg-zinc-900 z-10">
+            <Header />
+          </View>
+
+          <FlatList
+            data={[1]}
+            renderItem={() => (
+              <View className="px-4">
+                {/* salary */}
+                <InforCarSalary userId={user?.id as string} />
+
+                {/* Category transactions */}
+                <View className="mt-6">
+                  <CategoryTransactions userId={user?.id as string} />
+                </View>
+
+                {/* transactions */}
+                <View className="mt-6 flex-1">
+                  <LastestTransactionsPage userId={user?.id as string} />
+                </View>
+              </View>
+            )}
+            keyExtractor={(item) => item.toString()}
+            contentContainerStyle={{
+              paddingBottom: 20,
+            }}
+            showsVerticalScrollIndicator={true}
+            ListEmptyComponent={null}
+          />
         </View>
-
-        <FlatList
-          data={[1]}
-          renderItem={() => (
-            <View className="px-4">
-              {/* salary */}
-              <InforCarSalary userId={user?.id as string} />
-
-              {/* Category transactions */}
-              <View className="mt-6">
-                <CategoryTransactions userId={user?.id as string} />
-              </View>
-
-              {/* transactions */}
-              <View className="mt-6 flex-1">
-                <LastestTransactionsPage userId={user?.id as string} />
-              </View>
-            </View>
-          )}
-          keyExtractor={(item) => item.toString()}
-          contentContainerStyle={{
-            paddingBottom: 20,
-          }}
-          showsVerticalScrollIndicator={true}
-          ListEmptyComponent={null}
-        />
-      </View>
-    </OTAUpdateManager>
+      </OTAUpdateManager>
+    </>
   );
 };
 

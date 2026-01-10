@@ -1,7 +1,7 @@
 import * as Application from "expo-application";
 import * as IntentLauncher from "expo-intent-launcher";
 import { useCallback, useState } from "react";
-import { Alert, Platform } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
 
 export const useInstallPermission = () => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -9,34 +9,14 @@ export const useInstallPermission = () => {
 
   const checkInstallPermission = useCallback(async (): Promise<boolean> => {
     if (Platform.OS !== "android") {
-      return true; // iOS não precisa desta permissão
+      return true;
     }
 
     try {
       setIsChecking(true);
 
-      // Para Android 8.0 (API 26) ou superior
-      if (Platform.Version >= 26) {
-        try {
-          await IntentLauncher.startActivityAsync(
-            "android.settings.MANAGE_UNKNOWN_APP_SOURCES",
-            {
-              data: `package:${Application.applicationId}`,
-              extra: { from_settings: true },
-            }
-          );
-
-          setHasPermission(true);
-          return true;
-        } catch (error) {
-          console.log("Não foi possível verificar permissão:", error);
-          return false;
-        }
-      }
-
-      // Para Android inferior a 8.0, a permissão é diferente
-      setHasPermission(true);
-      return true;
+      setHasPermission(false);
+      return false;
     } catch (error) {
       console.error("Erro ao verificar permissão:", error);
       return false;
@@ -50,69 +30,129 @@ export const useInstallPermission = () => {
       return true;
     }
 
-    return new Promise((resolve) => {
-      Alert.alert(
-        "Permissão Necessária",
-        "Para instalar atualizações, você precisa permitir a instalação de apps de fontes desconhecidas.\n\n" +
-          "Isso é necessário apenas para atualizações do nosso aplicativo.",
-        [
-          {
-            text: "Cancelar",
-            style: "cancel",
-            onPress: () => resolve(false),
-          },
-          {
-            text: "Abrir Configurações",
-            onPress: async () => {
-              try {
-                if (Platform.Version >= "26") {
-                  // Android 8.0+
-                  await IntentLauncher.startActivityAsync(
-                    "android.settings.MANAGE_UNKNOWN_APP_SOURCES",
-                    {
-                      data: `package:${Application.applicationId}`,
-                      flags: 1,
-                    }
-                  );
-                } else {
-                  // Android 7.1 ou inferior
-                  await IntentLauncher.startActivityAsync(
-                    "android.settings.SECURITY_SETTINGS",
-                    {}
-                  );
-                }
-
-                // Dar tempo para o usuário alterar a configuração
-                setTimeout(async () => {
-                  const hasPerm = await checkInstallPermission();
-                  setHasPermission(hasPerm);
-                  resolve(hasPerm);
-                }, 1000);
-              } catch (error) {
-                console.error("Erro ao abrir configurações:", error);
-                Alert.alert(
-                  "Erro",
-                  'Não foi possível abrir as configurações. Por favor, ative manualmente a opção "Fontes desconhecidas" nas configurações de segurança.',
-                  [{ text: "OK", onPress: () => resolve(false) }]
-                );
-              }
+    try {
+      // Criar um alerta mais explicativo que ajuda o usuário a entender o processo
+      return new Promise((resolve) => {
+        Alert.alert(
+          "📱 Permissão de Instalação Necessária",
+          `Para instalar atualizações do app, você precisará:\n\n` +
+            `1. Permitir "Fontes Desconhecidas" ${
+              Platform.Version >= "26"
+                ? `para o app que fará a instalação (navegador ou gerenciador de arquivos)`
+                : `nas configurações do dispositivo`
+            }\n\n` +
+            `2. Esta permissão é segura e só será usada para atualizações do ${Application.applicationName}\n\n` +
+            `Quer abrir as configurações agora?`,
+          [
+            {
+              text: "Agora não",
+              style: "cancel",
+              onPress: () => resolve(false),
             },
-          },
-        ]
+            {
+              text: "Mostrar Instruções",
+              onPress: () => {
+                Alert.alert(
+                  "📝 Instruções Detalhadas",
+                  getInstallInstructions(),
+                  [
+                    { text: "Voltar", style: "cancel" },
+                    {
+                      text: "Abrir Configurações",
+                      onPress: async () => {
+                        const granted = await openInstallSettings();
+                        resolve(granted);
+                      },
+                    },
+                  ]
+                );
+              },
+            },
+            {
+              text: "Abrir Configurações",
+              onPress: async () => {
+                const granted = await openInstallSettings();
+                resolve(granted);
+              },
+            },
+          ]
+        );
+      });
+    } catch (error) {
+      console.error("Erro ao solicitar permissão:", error);
+      return false;
+    }
+  }, []);
+
+  const openInstallSettings = async (): Promise<boolean> => {
+    try {
+      if (Platform.Version >= "26") {
+        // Android 8.0+ - tenta abrir as configurações específicas
+        try {
+          await IntentLauncher.startActivityAsync(
+            "android.settings.MANAGE_UNKNOWN_APP_SOURCES",
+            {
+              data: `package:${Application.applicationId}`,
+            }
+          );
+        } catch (error) {
+          // Fallback para configurações gerais
+          await Linking.openSettings();
+        }
+      } else {
+        // Android 7.1 ou inferior
+        await IntentLauncher.startActivityAsync(
+          "android.settings.SECURITY_SETTINGS",
+          {}
+        );
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao abrir configurações:", error);
+      Alert.alert(
+        "⚠️ Não foi possível abrir configurações",
+        "Por favor, vá manualmente em:\n\n" +
+          "Configurações → Apps → Menu (⋯) → Acesso especial → Instalar apps desconhecidos",
+        [{ text: "OK" }]
       );
-    });
-  }, [checkInstallPermission]);
+      return false;
+    }
+  };
+
+  const getInstallInstructions = (): string => {
+    if (Platform.Version >= "30") {
+      return (
+        `Para Android 11+:\n` +
+        `1. Vá em Configurações → Apps\n` +
+        `2. Toque no app que baixou o APK (ex: Chrome, Gerenciador de Arquivos)\n` +
+        `3. Toque em "Instalar apps desconhecidos"\n` +
+        `4. Ative a permissão\n\n` +
+        `Nota: O Android pedirá confirmação na hora da instalação.`
+      );
+    } else if (Platform.Version >= "26") {
+      return (
+        `Para Android 8.0 a 10:\n` +
+        `1. Vá em Configurações → Apps e notificações → Acesso especial\n` +
+        `2. Toque em "Instalar apps desconhecidos"\n` +
+        `3. Selecione o app que baixou o APK\n` +
+        `4. Ative a permissão\n\n` +
+        `Nota: O Android pedirá confirmação na hora da instalação.`
+      );
+    } else {
+      return (
+        `Para Android 7.1 ou inferior:\n` +
+        `1. Vá em Configurações → Segurança\n` +
+        `2. Ative "Fontes desconhecidas"\n` +
+        `3. Confirme o alerta de segurança\n\n` +
+        `Nota: Depois da instalação, desative esta opção para segurança.`
+      );
+    }
+  };
 
   const ensureInstallPermission = useCallback(async (): Promise<boolean> => {
-    const hasPerm = await checkInstallPermission();
-
-    if (hasPerm) {
-      setHasPermission(true);
-      return true;
-    }
-
     return await requestInstallPermission();
-  }, [checkInstallPermission, requestInstallPermission]);
+  }, [requestInstallPermission]);
 
   return {
     hasPermission,

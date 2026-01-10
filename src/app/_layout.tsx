@@ -9,7 +9,9 @@ import { PaperProvider } from "react-native-paper";
 
 import { useEffect, useState } from "react";
 import OfflineScreen from "../components/OfflineScreen";
+import { FirebaseNotificationProvider } from "../contexts/FirebaseNotificationContextType";
 import { LogProvider } from "../contexts/LogContext";
+import { NotificationProvider } from "../contexts/NotificationContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { UserProvider } from "../contexts/UserContext";
 import { NetworkProvider, useNetwork } from "../hooks/useNetwork";
@@ -69,23 +71,27 @@ function RootLayoutNav() {
           <UserProvider>
             <PortalProvider>
               <PaperProvider>
-                <ThemeProvider>
-                  <NetworkProvider>
-                    <LogProvider>
-                      <Stack
-                        screenOptions={{
-                          headerShown: false,
-                          headerStyle: {
-                            backgroundColor: "#27272a",
-                          },
-                          title: Array.isArray(params.name)
-                            ? params.name.join(", ")
-                            : params.name,
-                        }}
-                      ></Stack>
-                    </LogProvider>
-                  </NetworkProvider>
-                </ThemeProvider>
+                <NotificationProvider>
+                  <FirebaseNotificationProvider>
+                    <ThemeProvider>
+                      <NetworkProvider>
+                        <LogProvider>
+                          <Stack
+                            screenOptions={{
+                              headerShown: false,
+                              headerStyle: {
+                                backgroundColor: "#27272a",
+                              },
+                              title: Array.isArray(params.name)
+                                ? params.name.join(", ")
+                                : params.name,
+                            }}
+                          ></Stack>
+                        </LogProvider>
+                      </NetworkProvider>
+                    </ThemeProvider>
+                  </FirebaseNotificationProvider>
+                </NotificationProvider>
               </PaperProvider>
             </PortalProvider>
           </UserProvider>

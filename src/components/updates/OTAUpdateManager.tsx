@@ -1,4 +1,3 @@
-// OTAUpdateManager.tsx - versão corrigida
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { AppState, View } from "react-native";

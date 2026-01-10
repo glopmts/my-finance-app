@@ -34,6 +34,7 @@
       "backgroundColor": "#1E1E1E",
       "package": "com.glopblog.myfinance",
       "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
       "permissions": [
         "REQUEST_INSTALL_PACKAGES",
         "INTERNET",
