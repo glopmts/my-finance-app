@@ -14,11 +14,11 @@
     "test:coverage": "jest --coverage"
   },
   "overrides": {
-    "react": "19.1.4",
+    "react": "19.1.0",
     "yaml": "2.8.2"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.14.30",
+        "@clerk/clerk-expo": "^2.14.30",
     "@expo/metro-runtime": "~6.1.2",
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.2.8",
@@ -60,8 +60,8 @@
     "lucide-react-native": "^0.556.0",
     "nativewind": "^4.1.23",
     "prettier-plugin-tailwindcss": "^0.5.14",
-    "react": "19.1.4",
-    "react-dom": "19.1.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-paper": "^5.14.5",
@@ -87,7 +87,7 @@
     "jest-expo": "^54.0.14",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
-    "react-test-renderer": "^19.1.4",
+    "react-test-renderer": "^19.2.3",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.2"
   },
