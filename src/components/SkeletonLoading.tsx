@@ -65,7 +65,7 @@ const SkeletonItem: React.FC<SkeletonProps> = ({
 // Componente para a primeira tela (InforCarSalary)
 export const SalarySkeleton: React.FC = () => {
   return (
-    <View className="w-full p-4" style={styles.container}>
+    <View className="w-full p-2" style={styles.container}>
       {/* Header */}
       <View className="mb-6 flex-row justify-between items-center">
         <SkeletonItem width={200} height={30} borderRadius={8} />
