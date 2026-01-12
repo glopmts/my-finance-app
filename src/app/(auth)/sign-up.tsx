@@ -6,7 +6,7 @@ import { AuthLink } from "@/components/ui/auth-link";
 import { Divider } from "@/components/ui/divider";
 import { RNButton } from "@/components/ui/rn-button";
 import { RNInput } from "@/components/ui/rn-input";
-import { useSignUpFlow } from "@/hooks/use-sign-up";
+import { useSignUpFlow } from "../../hooks/auth/use-sign-up";
 
 export default function SignUp() {
   const router = useRouter();

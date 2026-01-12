@@ -3,6 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Alert, Platform, View } from "react-native";
 import { useNotificationContext } from "./NotificationContext";
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
 interface NotificationHandlerProps {
   onNotificationTap?: (data: any) => void;
   showAlerts?: boolean;

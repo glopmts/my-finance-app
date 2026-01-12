@@ -19,10 +19,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setError(null);
 
       const userData = await userService.getUserByClerkId(clerkId);
+
       setUser(userData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao buscar usuário");
+      const errorMessage =
+        err instanceof Error ? err.message : "Erro ao buscar usuário";
       console.error("Error fetching user:", err);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

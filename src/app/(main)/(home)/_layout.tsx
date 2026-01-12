@@ -1,25 +1,23 @@
-import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useColorScheme } from "nativewind";
 
-import { InlineLoading } from "@/components/Loading";
 import { useClerkUser } from "@/hooks/useClerkUser";
+import { useAuth } from "@clerk/clerk-expo";
+import { ActivityIndicator } from "react-native";
 
 export default function MainLayout() {
-  const { isSignedIn } = useAuth();
+  const { userId } = useAuth();
   const { isAuthenticated } = useClerkUser();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  if (!isSignedIn) {
+  if (!userId) {
     return <Redirect href="/(auth)/sign-in" />;
   }
 
   if (!isAuthenticated) {
-    return (
-      <InlineLoading message="Carregando dados do usuário..." size="large" />
-    );
+    return <ActivityIndicator size="large" />;
   }
 
   return (

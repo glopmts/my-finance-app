@@ -15,13 +15,13 @@ import {
   View,
 } from "react-native";
 import { useTransactionForm } from "../../hooks/useTransactionForm";
+import { createTransactionStyles } from "../../styles/form-transactions";
 import {
   Transaction,
   TransactionPropsCreater,
   TransactionType,
   TransactionUpdateProps,
 } from "../../types/transaction-props";
-import { createTransactionStyles } from "../styles/form-transactions";
 import CategorySelector from "./categorys-selector";
 import PaymentSourceSelector from "./payment-source-selector";
 

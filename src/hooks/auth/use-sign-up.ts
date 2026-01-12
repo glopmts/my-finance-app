@@ -4,7 +4,7 @@ import { useSignUp as useClerkSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
-import { API_BASE_URL } from "../lib/api-from-url";
+import { API_BASE_URL } from "../../lib/api-from-url";
 
 interface UseSignUpReturn {
   emailAddress: string;

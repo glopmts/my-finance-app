@@ -27,10 +27,7 @@ const HomePage = () => {
 
   useQuickActions();
 
-  const handleNotificationTap = (data: any) => {
-    console.log("Notificação tocada:", data);
-    // Navegar para a tela relevante baseada nos dados
-  };
+  const handleNotificationTap = (data: any) => {};
 
   useEffect(() => {
     if (loading) {

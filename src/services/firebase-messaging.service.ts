@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications";
 import { getApps, initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { Platform } from "react-native";
+import { API_BASE_URL } from "../lib/api-from-url";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -50,20 +51,16 @@ class FirebaseMessagingService {
         await this.initialize();
       }
 
-      // Verificar permissões
       const permission = await this.requestNotificationPermission();
       if (!permission) {
-        console.log("❌ Permissão de notificações não concedida");
         return null;
       }
 
-      // Obter token
       const token = await getToken(this.messaging, {
         vapidKey: process.env.EXPO_PUBLIC_FIREBASE_VAPID_KEY,
       });
 
       if (token) {
-        console.log("✅ Token FCM obtido:", token.substring(0, 20) + "...");
         return token;
       }
 
@@ -101,11 +98,9 @@ class FirebaseMessagingService {
     if (!this.messaging) return;
 
     try {
-      // Ouvir mensagens em primeiro plano
       onMessage(this.messaging, (payload: any) => {
         console.log("📲 Mensagem FCM recebida em primeiro plano:", payload);
 
-        // Mostrar notificação local
         this.showLocalNotification(payload);
       });
 
@@ -142,24 +137,19 @@ class FirebaseMessagingService {
         await this.initialize();
       }
 
-      // Em produção, você faria isso no backend
       const token = await this.getFCMToken();
       if (!token) return false;
 
-      // Chamar API do backend para inscrever no tópico
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/notifications/subscribe`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token,
-            topic: topicName,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/notifications/subscribe`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          topic: topicName,
+        }),
+      });
 
       return response.ok;
     } catch (error) {
@@ -175,7 +165,7 @@ class FirebaseMessagingService {
       if (!token) return false;
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/notifications/unsubscribe`,
+        `${API_BASE_URL}/notifications/unsubscribe`,
         {
           method: "POST",
           headers: {
@@ -198,19 +188,16 @@ class FirebaseMessagingService {
   // Enviar mensagem para tópico (do frontend - apenas para testes)
   async sendToTopic(topicName: string, message: any): Promise<boolean> {
     try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/notifications/send`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            topic: topicName,
-            message,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/notifications/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topicName,
+          message,
+        }),
+      });
 
       const result = await response.json();
       return result.success;

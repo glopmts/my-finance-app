@@ -7,7 +7,7 @@ const Transactions = () => {
   const { user, loading, isAuthenticated } = useClerkUser();
 
   if (loading) {
-    return <InlineLoading size="small" />;
+    return <InlineLoading size="large" />;
   }
 
   if (!isAuthenticated) {

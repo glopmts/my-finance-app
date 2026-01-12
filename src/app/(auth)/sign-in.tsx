@@ -8,7 +8,7 @@ import { AuthLink } from "@/components/ui/auth-link";
 import { Divider } from "@/components/ui/divider";
 import { RNButton } from "@/components/ui/rn-button";
 import { RNInput } from "@/components/ui/rn-input";
-import { useSignInFlow } from "@/hooks/use-sign-in";
+import { useSignInFlow } from "../../hooks/auth/use-sign-in";
 
 export default function SignIn() {
   const { isSignedIn } = useAuth();

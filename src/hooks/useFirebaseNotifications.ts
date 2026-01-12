@@ -16,11 +16,9 @@ export const useFirebaseNotifications = () => {
       setIsFirebaseReady(ready);
 
       if (ready && user?.id) {
-        // Obter token FCM
         const token = await firebaseMessagingService.getFCMToken();
         if (token) {
           setFcmToken(token);
-          // Salvar no seu backend
           await notificationService.saveTokenToBackend(token, user.id);
         }
       }
